@@ -1,0 +1,1449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tangent Plane Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;1,500&display=swap">
+<style>
+/* Layout: instrument panel on the left, full-bleed 3D stage on the right, equation card floating over the stage */
+:root {
+  --panel-w: 340px;
+  --bg: #e8ecf0;
+  --panel: #f6f8f9;
+  --ink: #15202b;
+  --muted: #566573;
+  --line: #d0d8df;
+  --field: #ffffff;
+  --accent: #1d5fa6;
+  --accent-ink: #ffffff;
+  --stage: #fafbfc;
+  --card: rgba(255, 255, 255, 0.94);
+  --gold: #b87908;
+  --ax-x: #c23b2e;
+  --ax-y: #23865a;
+  --ax-z: #2a5db0;
+  --grid: #7d8b99;
+  --err: #b3261e;
+  --f-display: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --panel: #121a23; --ink: #e3e8ed; --muted: #97a5b3; --line: #253240; --field: #0d141c;
+    --accent: #78abf0; --accent-ink: #0a1220; --stage: #0a0f15; --card: rgba(18, 26, 35, 0.94);
+    --gold: #f0b43c; --ax-x: #f07a6e; --ax-y: #5fd09a; --ax-z: #86aef5; --grid: #6f7e8d; --err: #ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --panel: #121a23; --ink: #e3e8ed; --muted: #97a5b3; --line: #253240; --field: #0d141c;
+  --accent: #78abf0; --accent-ink: #0a1220; --stage: #0a0f15; --card: rgba(18, 26, 35, 0.94);
+  --gold: #f0b43c; --ax-x: #f07a6e; --ax-y: #5fd09a; --ax-z: #86aef5; --grid: #6f7e8d; --err: #ff8a80;
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; overflow: hidden; }
+* { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app { display: grid; grid-template-columns: var(--panel-w) minmax(0, 1fr); height: 100%; position: relative; }
+
+/* ---------- Panel ---------- */
+.panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 18px 16px 28px; display: flex; flex-direction: column; gap: 20px; }
+.brand h1 { font-family: var(--f-display); font-weight: 500; font-size: 1.45rem; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+.brand h1 em { font-style: italic; color: var(--accent); }
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; }
+
+.sec { display: flex; flex-direction: column; gap: 10px; }
+.sec + .sec { border-top: 1px solid var(--line); padding-top: 18px; }
+.sec h2 { margin: 0; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; background: var(--field); }
+.seg button { border: 0; background: transparent; padding: 7px 8px; border-radius: 5px; cursor: pointer; font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.exprrow { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; background: var(--field); overflow: hidden; }
+.exprrow:focus-within { border-color: var(--accent); }
+.exprrow .pre { font-family: var(--f-mono); padding: 9px 0 9px 10px; color: var(--muted); white-space: nowrap; }
+.exprrow input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 9px 10px; font-family: var(--f-mono); font-size: 0.95rem; outline: none; }
+.help { color: var(--muted); font-size: 0.8rem; line-height: 1.45; margin: 0; }
+.help code { font-family: var(--f-mono); font-size: 0.78rem; }
+.err { color: var(--err); font-size: 0.82rem; margin: 0; min-height: 0; }
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row > label { flex: 1; }
+select, .num { border: 1px solid var(--line); border-radius: 6px; background: var(--field); padding: 6px 8px; }
+select { width: 100%; }
+.num { width: 100%; font-family: var(--f-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.lbl { display: flex; flex-direction: column; gap: 4px; font-size: 0.78rem; color: var(--muted); }
+
+.btn { border: 1px solid var(--line); background: var(--field); border-radius: 7px; padding: 7px 12px; cursor: pointer; font-size: 0.85rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 500; }
+.btn.primary:hover { filter: brightness(1.08); }
+
+details.box { border: 1px solid var(--line); border-radius: 8px; background: var(--field); }
+details.box summary { cursor: pointer; padding: 8px 10px; font-size: 0.82rem; color: var(--muted); }
+details.box .inner { padding: 4px 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+.boxgrid { display: grid; grid-template-columns: 1.4em 1fr 1fr; gap: 6px 8px; align-items: center; font-family: var(--f-mono); font-size: 0.85rem; }
+.boxgrid .h { font-size: 0.72rem; color: var(--muted); font-family: var(--f-body); }
+
+.ctl { display: grid; grid-template-columns: 7.2em 1fr auto; align-items: center; gap: 10px; font-size: 0.85rem; }
+.ctl output { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+input[type="color"] { width: 38px; height: 28px; border: 1px solid var(--line); border-radius: 6px; padding: 2px; background: var(--field); cursor: pointer; }
+.swatches { display: flex; gap: 6px; align-items: center; }
+.swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--line); cursor: pointer; padding: 0; }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.colorrow { display: flex; align-items: center; gap: 10px; justify-content: space-between; font-size: 0.85rem; }
+
+.check { display: flex; align-items: center; gap: 8px; font-size: 0.87rem; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.pt { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pt .lbl span { font-family: var(--f-mono); }
+
+/* ---------- Stage ---------- */
+.stage { position: relative; min-width: 0; min-height: 0; background: var(--stage); }
+#view { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+#view.grab { cursor: grabbing; }
+.viewbar { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 24px); }
+.viewbar button { border: 1px solid var(--line); background: var(--card); border-radius: 7px; padding: 6px 9px; font-family: var(--f-mono); font-size: 0.78rem; cursor: pointer; }
+.viewbar button:hover { border-color: var(--accent); }
+.viewbar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.hint { position: absolute; top: 12px; left: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 30px 8px 11px; font-size: 0.8rem; line-height: 1.5; color: var(--muted); max-width: min(360px, calc(100% - 24px)); }
+.hint b { color: var(--ink); font-weight: 500; }
+.hint .x { position: absolute; top: 4px; right: 4px; border: 0; background: transparent; cursor: pointer; color: var(--muted); font-size: 1rem; line-height: 1; padding: 4px 6px; }
+.busy { position: absolute; bottom: 12px; right: 12px; font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+
+/* ---------- Equation card ---------- */
+.eqcard { position: absolute; left: calc(var(--panel-w) + 16px); bottom: 16px; width: min(640px, calc(100% - var(--panel-w) - 32px)); background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(10, 20, 30, 0.12); backdrop-filter: blur(6px); }
+.eqhead { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px 16px; border-bottom: 1px solid var(--line); }
+.eqhead h3 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 1.05rem; flex: 1; min-width: 0; }
+.eqhead .btn { padding: 4px 9px; font-size: 0.78rem; }
+.eqbody { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; max-height: 46vh; overflow: auto; }
+.surf { font-size: 0.82rem; color: var(--muted); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.givens { display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: center; }
+.eqrow { display: grid; grid-template-columns: 8.2em minmax(0, 1fr); gap: 12px; align-items: center; }
+.eqrow .k { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.eqrow .v { overflow-x: auto; overflow-y: hidden; padding-block: 2px; }
+.eqrow.main .v { font-size: 1.12em; }
+.note { font-size: 0.8rem; color: var(--muted); margin: 0; }
+.note.warn { color: var(--err); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.empty { color: var(--muted); margin: 0; font-size: 0.9rem; }
+mjx-container { color: var(--ink); }
+.eqcard.collapsed .eqbody { display: none; }
+.eqcard.collapsed .eqhead { border-bottom: 0; }
+
+/* Lecture mode: larger type for projection */
+.app.lecture .eqcard { width: min(900px, calc(100% - var(--panel-w) - 32px)); font-size: 1.35rem; }
+.app.lecture .hint, .app.lecture .viewbar button { font-size: 1rem; }
+
+@media (max-width: 820px) {
+  body { overflow: auto; }
+  .app { display: flex; flex-direction: column; height: auto; }
+  .stage { order: 1; height: 58svh; min-height: 320px; }
+  .eqcard { order: 2; position: static; width: auto; margin: 12px 16px 0; box-shadow: none; }
+  .app.lecture .eqcard { width: auto; }
+  .panel { order: 3; border-right: 0; overflow: visible; }
+  .eqbody { max-height: none; }
+  .eqrow { grid-template-columns: 1fr; gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+
+<div class="app" id="app">
+  <aside class="panel" aria-label="Controls">
+    <header class="brand">
+      <h1>Tangent Plane <em>Explorer</em></h1>
+      <p>MAT 238 · Calculus III</p>
+    </header>
+
+    <section class="sec" aria-labelledby="h-surf">
+      <h2 id="h-surf">Surface</h2>
+      <div class="seg" id="modeSeg">
+        <button type="button" id="mode-explicit" data-mode="explicit" aria-pressed="true">z = f(x, y)</button>
+        <button type="button" id="mode-implicit" data-mode="implicit" aria-pressed="false">F(x, y, z) = c</button>
+      </div>
+      <div class="exprrow">
+        <span class="pre" id="exprPre">z =</span>
+        <input id="expr" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Surface formula">
+      </div>
+      <p class="help" id="exprHelp"></p>
+      <label class="lbl" for="preset">Examples
+        <select id="preset"></select>
+      </label>
+      <details class="box" id="boxDetails">
+        <summary>Viewing box and resolution</summary>
+        <div class="inner">
+          <div class="boxgrid">
+            <span></span><span class="h">min</span><span class="h">max</span>
+            <span>x</span><input class="num" id="xmin" type="number" step="any"><input class="num" id="xmax" type="number" step="any">
+            <span>y</span><input class="num" id="ymin" type="number" step="any"><input class="num" id="ymax" type="number" step="any">
+            <span>z</span><input class="num" id="zmin" type="number" step="any"><input class="num" id="zmax" type="number" step="any">
+          </div>
+          <label class="check" id="autoZWrap"><input type="checkbox" id="autoZ"> Fit z to the surface</label>
+          <div class="ctl"><span>Resolution</span><input type="range" id="res" min="30" max="200" step="2"><output id="resOut"></output></div>
+        </div>
+      </details>
+      <div class="row">
+        <button type="button" class="btn primary" id="plotBtn">Plot surface</button>
+      </div>
+      <p class="err" id="err" role="alert"></p>
+    </section>
+
+    <section class="sec" aria-labelledby="h-look">
+      <h2 id="h-look">Appearance</h2>
+      <div class="colorrow">
+        <span>Surface</span>
+        <div class="swatches" id="swatches"></div>
+        <input type="color" id="surfColor" aria-label="Surface color">
+      </div>
+      <div class="ctl"><span>Opacity</span><input type="range" id="surfOpacity" min="0.1" max="1" step="0.05"><output id="surfOpacityOut"></output></div>
+      <div class="colorrow">
+        <span>Tangent plane</span>
+        <input type="color" id="planeColor" aria-label="Tangent plane color">
+      </div>
+      <div class="ctl"><span>Plane opacity</span><input type="range" id="planeOpacity" min="0.1" max="1" step="0.05"><output id="planeOpacityOut"></output></div>
+      <div class="ctl"><span>Plane size</span><input type="range" id="planeSize" min="0.15" max="1.2" step="0.05"><output id="planeSizeOut"></output></div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="showGrid"> Grid lines</label>
+        <label class="check"><input type="checkbox" id="showAxes"> Axes</label>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-tp">
+      <h2 id="h-tp">Tangent plane</h2>
+      <div class="seg" id="numSeg">
+        <button type="button" id="num-decimal" data-num="decimal" aria-pressed="true">Decimal</button>
+        <button type="button" id="num-exact" data-num="exact" aria-pressed="false">Exact</button>
+      </div>
+      <label class="lbl" id="snapWrap" for="snap">Clicks snap to multiples of
+        <select id="snap">
+          <option value="1">1</option>
+          <option value="0.5">1/2</option>
+          <option value="0.25">1/4</option>
+        </select>
+      </label>
+      <div class="pt" id="ptInputs">
+        <label class="lbl" for="px">x₀<input class="num" id="px" type="number" step="any"></label>
+        <label class="lbl" for="py">y₀<input class="num" id="py" type="number" step="any"></label>
+        <label class="lbl" for="pz">z₀<input class="num" id="pz" type="number" step="any"></label>
+      </div>
+      <div class="row">
+        <button type="button" class="btn" id="setPtBtn">Set point</button>
+        <button type="button" class="btn" id="clearPtBtn">Clear</button>
+      </div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="showPlane"> Tangent plane</label>
+        <label class="check"><input type="checkbox" id="showNormal"> Normal vector</label>
+        <label class="check"><input type="checkbox" id="showTraces"> Traces</label>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-lc">
+      <h2 id="h-lc">Level curves</h2>
+      <label class="check"><input type="checkbox" id="showContours"> Show horizontal slices z = k</label>
+      <div class="ctl"><span>Levels</span><input type="range" id="nContours" min="3" max="24" step="1"><output id="nContoursOut"></output></div>
+      <p class="help">Each curve is drawn on the surface and projected onto the floor of the box.</p>
+    </section>
+  </aside>
+
+  <main class="stage" id="stage">
+    <canvas id="view" aria-label="3D view of the surface. Click the surface to place a point."></canvas>
+    <div class="hint" id="hint">
+      <b>Click</b> the surface to place a point. <b>Drag the point</b> to slide it.<br>
+      Drag to rotate · scroll or pinch to zoom · right-drag or two fingers to pan.
+      <button type="button" class="x" id="hintX" aria-label="Dismiss tips">×</button>
+    </div>
+    <div class="viewbar" id="viewbar">
+      <button type="button" data-view="iso" title="Standard 3D view">3D</button>
+      <button type="button" data-view="xy" title="Look down the z-axis">xy</button>
+      <button type="button" data-view="xz" title="Look along the y-axis">xz</button>
+      <button type="button" data-view="yz" title="Look along the x-axis">yz</button>
+      <button type="button" id="lectureBtn" aria-pressed="false" title="Larger text for projection">Lecture</button>
+      <button type="button" id="fsBtn" title="Full screen">⛶</button>
+    </div>
+    <div class="busy" id="busy" hidden>Meshing…</div>
+  </main>
+
+  <section class="eqcard" id="eqcard" aria-live="polite">
+    <div class="eqhead">
+      <h3 id="eqTitle">Tangent plane</h3>
+      <button type="button" class="btn" id="copyBtn">Copy LaTeX</button>
+      <button type="button" class="btn" id="collapseBtn" aria-expanded="true">Hide</button>
+    </div>
+    <div class="eqbody" id="eqbody"></div>
+  </section>
+</div>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]] },
+  svg: { fontCache: "global" },
+  startup: { typeset: false, ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => window.__mjReady && window.__mjReady()); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<script>
+(() => {
+"use strict";
+const $ = (id) => document.getElementById(id);
+
+/* =====================================================================
+   Presets
+   ===================================================================== */
+const PRESETS = {
+  explicit: [
+    { name: "Hill", expr: "4 - x^2/2 - y^2", box: [-2, 2, -2, 2, -2, 4.5], point: [1, 1] },
+    { name: "Paraboloid", expr: "x^2 + y^2", box: [-2.5, 2.5, -2.5, 2.5, -0.5, 6], point: [1, -1] },
+    { name: "Saddle", expr: "x^2 - y^2", box: [-2.5, 2.5, -2.5, 2.5, -4, 4], point: [1, 0.5] },
+    { name: "Upper hemisphere", expr: "sqrt(9 - x^2 - y^2)", box: [-3.2, 3.2, -3.2, 3.2, -0.5, 3.5], point: [1, 2] },
+    { name: "Ripples", expr: "sin(x) * cos(y)", box: [-4, 4, -4, 4, -2, 2], point: [1, 0.5] },
+    { name: "Gaussian bump", expr: "3 * exp(-(x^2 + y^2) / 2)", box: [-3.5, 3.5, -3.5, 3.5, -0.5, 3.5], point: [1, 0] },
+    { name: "Monkey saddle", expr: "x^3 - 3*x*y^2", box: [-1.6, 1.6, -1.6, 1.6, -3, 3], point: [1, 0.5] },
+    { name: "Cone (corner at origin)", expr: "sqrt(x^2 + y^2)", box: [-3, 3, -3, 3, -0.5, 4], point: [0, 2] },
+    { name: "Two hills", expr: "x * y * exp(-(x^2 + y^2) / 4)", box: [-5, 5, -5, 5, -2, 2], point: [1, 1] },
+    { name: "Plane", expr: "6 - 2x - 3y", box: [-2, 3, -2, 3, -4, 8], point: [1, 1] }
+  ],
+  implicit: [
+    { name: "Sphere", expr: "x^2 + y^2 + z^2 = 9", box: [-3.5, 3.5, -3.5, 3.5, -3.5, 3.5], point: [1, 2, 2] },
+    { name: "Ellipsoid", expr: "x^2/9 + y^2/4 + z^2 = 1", box: [-3.5, 3.5, -2.5, 2.5, -1.5, 1.5], point: [2, 1, 0.5] },
+    { name: "Hyperboloid of one sheet", expr: "x^2 + y^2 - z^2 = 1", box: [-3, 3, -3, 3, -2.5, 2.5], point: [1, 1, 1] },
+    { name: "Hyperboloid of two sheets", expr: "z^2 - x^2 - y^2 = 1", box: [-3, 3, -3, 3, -3.2, 3.2], point: [2, 2, 3] },
+    { name: "Double cone", expr: "z^2 = x^2 + y^2", box: [-3, 3, -3, 3, -3, 3], point: [0, 2, 2] },
+    { name: "Circular cylinder", expr: "x^2 + y^2 = 4", box: [-3, 3, -3, 3, -2.5, 2.5], point: [0, 2, 1] },
+    { name: "Elliptic paraboloid", expr: "z = x^2 + y^2/4", box: [-2.5, 2.5, -3, 3, -0.5, 5], point: [1, 2, 2] },
+    { name: "Torus", expr: "(sqrt(x^2 + y^2) - 2)^2 + z^2 = 1", box: [-3.3, 3.3, -3.3, 3.3, -1.3, 1.3], point: [3, 0, 0] }
+  ]
+};
+
+/* =====================================================================
+   State
+   ===================================================================== */
+const state = {
+  mode: "explicit",
+  expr: { explicit: PRESETS.explicit[0].expr, implicit: PRESETS.implicit[0].expr },
+  box: { xmin: -2, xmax: 2, ymin: -2, ymax: 2, zmin: -2, zmax: 4.5 },
+  autoZ: false,
+  res: { explicit: 120, implicit: 64 },
+  surfColor: "#3b7fc4",
+  surfOpacity: 0.9,
+  planeColor: "#e0a526",
+  planeOpacity: 0.6,
+  planeSize: 0.55,
+  showGrid: true,
+  showAxes: true,
+  exact: true,
+  snap: 0.5,
+  showPlane: true,
+  showNormal: true,
+  showTraces: false,
+  showContours: false,
+  nContours: 8,
+  lecture: false,
+  point: null // {x,y,z}
+};
+const SWATCHES = ["#3b7fc4", "#2a9d8f", "#7b5ea7", "#d1603d", "#8a96a3"];
+let S = null; // compiled surface {mode, f, grad, tex}
+
+/* =====================================================================
+   Expression compiling (math.js parse -> native JS function)
+   ===================================================================== */
+const FN_MAP = {
+  sin: "Math.sin", cos: "Math.cos", tan: "Math.tan", asin: "Math.asin", acos: "Math.acos", atan: "Math.atan",
+  sinh: "Math.sinh", cosh: "Math.cosh", tanh: "Math.tanh", asinh: "Math.asinh", acosh: "Math.acosh", atanh: "Math.atanh",
+  exp: "Math.exp", sqrt: "Math.sqrt", abs: "Math.abs", cbrt: "Math.cbrt", sign: "Math.sign",
+  floor: "Math.floor", ceil: "Math.ceil", round: "Math.round", log10: "Math.log10", log2: "Math.log2",
+  atan2: "Math.atan2", min: "Math.min", max: "Math.max"
+};
+function toJS(node, allowed) {
+  switch (node.type) {
+    case "ConstantNode": {
+      const v = Number(node.value);
+      if (!Number.isFinite(v)) throw new Error("Unsupported constant");
+      return "(" + v + ")";
+    }
+    case "SymbolNode":
+      if (allowed.has(node.name)) return node.name;
+      if (node.name === "pi") return "Math.PI";
+      if (node.name === "e") return "Math.E";
+      throw new Error("sym:" + node.name);
+    case "ParenthesisNode":
+      return "(" + toJS(node.content, allowed) + ")";
+    case "OperatorNode": {
+      const a = node.args.map((n) => toJS(n, allowed));
+      switch (node.fn) {
+        case "add": return "(" + a[0] + "+" + a[1] + ")";
+        case "subtract": return "(" + a[0] + "-" + a[1] + ")";
+        case "multiply": return "(" + a[0] + "*" + a[1] + ")";
+        case "divide": return "(" + a[0] + "/" + a[1] + ")";
+        case "pow": return "__pow(" + a[0] + "," + a[1] + ")";
+        case "unaryMinus": return "(-" + a[0] + ")";
+        case "unaryPlus": return "(" + a[0] + ")";
+        default: throw new Error("op:" + node.op);
+      }
+    }
+    case "FunctionNode": {
+      const name = node.fn && node.fn.name ? node.fn.name : node.name;
+      const a = node.args.map((n) => toJS(n, allowed));
+      if (name === "log") return a.length === 2 ? "(Math.log(" + a[0] + ")/Math.log(" + a[1] + "))" : "Math.log(" + a[0] + ")";
+      if (name === "sec") return "(1/Math.cos(" + a[0] + "))";
+      if (name === "csc") return "(1/Math.sin(" + a[0] + "))";
+      if (name === "cot") return "(1/Math.tan(" + a[0] + "))";
+      if (name === "square") return "(" + a[0] + "*" + a[0] + ")";
+      if (name === "cube") return "(" + a[0] + "*" + a[0] + "*" + a[0] + ")";
+      if (name === "nthRoot") return "__nroot(" + a[0] + "," + (a[1] || "2") + ")";
+      if (FN_MAP[name]) return FN_MAP[name] + "(" + a.join(",") + ")";
+      throw new Error("fn:" + name);
+    }
+    default:
+      throw new Error("node:" + node.type);
+  }
+}
+// Real-valued power: allow odd roots of negatives, e.g. x^(1/3)
+function __pow(a, b) {
+  if (a < 0 && !Number.isInteger(b)) {
+    const inv = 1 / b, r = Math.round(inv);
+    if (Math.abs(inv - r) < 1e-9 && r % 2 !== 0) return -Math.pow(-a, b);
+  }
+  return Math.pow(a, b);
+}
+function __nroot(a, n) { return (a < 0 && n % 2 === 1) ? -Math.pow(-a, 1 / n) : Math.pow(a, 1 / n); }
+
+function makeFn(node, vars) {
+  const allowed = new Set(vars);
+  try {
+    const code = toJS(node, allowed);
+    const g = new Function("__pow", "__nroot", "return function(x,y,z){return " + code + ";}")(__pow, __nroot);
+    return (x, y, z) => { const r = g(x, y, z); return typeof r === "number" ? r : NaN; };
+  } catch (e) {
+    if (String(e.message).startsWith("sym:")) throw e;
+    const c = node.compile();
+    return (x, y, z) => { try { const r = c.evaluate({ x, y, z }); return typeof r === "number" ? r : NaN; } catch (_) { return NaN; } };
+  }
+}
+function checkSymbols(node, vars) {
+  const ok = new Set([...vars, "pi", "e"]);
+  node.traverse((n, path, parent) => {
+    if (n.isSymbolNode && !(parent && parent.isFunctionNode && path === "fn")) {
+      if (!ok.has(n.name)) {
+        const list = vars.join(", ");
+        throw new Error("Unknown symbol “" + n.name + "”. Use " + list + ", plus pi and e. Write products with * or a space, e.g. 2*x*y.");
+      }
+    }
+    if (n.isFunctionNode) {
+      const name = n.fn && n.fn.name ? n.fn.name : n.name;
+      if (!FN_MAP[name] && !["log", "sec", "csc", "cot", "square", "cube", "nthRoot"].includes(name)) {
+        throw new Error("Unknown function “" + name + "”. Try sin, cos, tan, exp, log (natural), sqrt, abs, and the like.");
+      }
+    }
+  });
+}
+function preprocess(s) {
+  return s.replace(/\*\*/g, "^").replace(/\bln\s*\(/g, "log(").replace(/[−–]/g, "-").replace(/·|×/g, "*").trim();
+}
+function derivFn(node, v, vars, f) {
+  try {
+    const d = math.derivative(node, v);
+    const fn = makeFn(d, vars);
+    return fn;
+  } catch (e) {
+    const h = 1e-6;
+    if (v === "x") return (x, y, z) => (f(x + h, y, z) - f(x - h, y, z)) / (2 * h);
+    if (v === "y") return (x, y, z) => (f(x, y + h, z) - f(x, y - h, z)) / (2 * h);
+    return (x, y, z) => (f(x, y, z + h) - f(x, y, z - h)) / (2 * h);
+  }
+}
+
+function compileSurface(mode, raw) {
+  let text = preprocess(raw);
+  if (!text) throw new Error("Enter a formula first.");
+  if (mode === "explicit") {
+    text = text.replace(/^\s*(z|f\s*\(\s*x\s*,\s*y\s*\))\s*=\s*/i, "");
+    if (text.includes("=")) throw new Error("Enter only the right-hand side of z = f(x, y), or switch to F(x, y, z) = c for an equation.");
+    let node;
+    try { node = math.parse(text); } catch (e) { throw new Error("Couldn't read that formula: " + e.message); }
+    checkSymbols(node, ["x", "y"]);
+    const f = makeFn(node, ["x", "y", "z"]);
+    const fx = derivFn(node, "x", ["x", "y", "z"], f);
+    const fy = derivFn(node, "y", ["x", "y", "z"], f);
+    let tex; try { tex = "z = " + node.toTex({ parenthesis: "auto", implicit: "hide" }); } catch (_) { tex = "z = " + text; }
+    return { mode, f: (x, y) => f(x, y, 0), fx: (x, y) => fx(x, y, 0), fy: (x, y) => fy(x, y, 0), tex, text };
+  }
+  const parts = text.split("=");
+  if (parts.length > 2) throw new Error("Use a single = sign, e.g. x^2 + y^2 + z^2 = 9.");
+  const lhs = parts[0].trim(), rhs = parts.length === 2 ? parts[1].trim() : "0";
+  if (!lhs || !rhs) throw new Error("Both sides of the equation need something on them.");
+  let node, ln, rn;
+  try { ln = math.parse(lhs); rn = math.parse(rhs); node = math.parse("(" + lhs + ") - (" + rhs + ")"); }
+  catch (e) { throw new Error("Couldn't read that equation: " + e.message); }
+  checkSymbols(node, ["x", "y", "z"]);
+  const F = makeFn(node, ["x", "y", "z"]);
+  const Fx = derivFn(node, "x", ["x", "y", "z"], F);
+  const Fy = derivFn(node, "y", ["x", "y", "z"], F);
+  const Fz = derivFn(node, "z", ["x", "y", "z"], F);
+  let tex; try { tex = ln.toTex({ implicit: "hide" }) + " = " + rn.toTex({ implicit: "hide" }); } catch (_) { tex = text; }
+  return { mode, F, Fx, Fy, Fz, tex, text };
+}
+
+/* =====================================================================
+   Exact / decimal number formatting (returns TeX pieces)
+   ===================================================================== */
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function squareSplit(n) { // n = m^2 * k, k squarefree
+  let m = 1, k = n;
+  for (let d = 2; d * d <= k; d++) { while (k % (d * d) === 0) { k /= d * d; m *= d; } }
+  return [m, k];
+}
+function exactify(v) {
+  if (!Number.isFinite(v)) return null;
+  const a = Math.abs(v), neg = v < 0;
+  if (a < 1e-10) return { neg: false, abs: "0", zero: true, one: false, exact: true };
+  const tol = 1e-9 * Math.max(1, a);
+  for (let q = 1; q <= 60; q++) {
+    const p = Math.round(a * q);
+    if (p > 0 && Math.abs(a - p / q) < tol) {
+      const g = gcd(p, q), P = p / g, Q = q / g;
+      return { neg, abs: Q === 1 ? String(P) : "\\frac{" + P + "}{" + Q + "}", zero: false, one: P === 1 && Q === 1, exact: true };
+    }
+  }
+  const r = a / Math.PI;
+  for (let q = 1; q <= 12; q++) {
+    const p = Math.round(r * q);
+    if (p > 0 && p <= 48 && Math.abs(r - p / q) < 1e-9 * Math.max(1, r)) {
+      const g = gcd(p, q), P = p / g, Q = q / g, top = (P === 1 ? "" : P) + "\\pi";
+      return { neg, abs: Q === 1 ? top : "\\frac{" + top + "}{" + Q + "}", zero: false, one: false, exact: true };
+    }
+  }
+  const a2 = a * a;
+  for (let q = 1; q <= 60; q++) {
+    const p = Math.round(a2 * q);
+    if (p > 0 && p * q <= 5000 && Math.abs(a2 - p / q) < 1e-9 * Math.max(1, a2)) {
+      const [m, k] = squareSplit(p * q);
+      if (k === 1) continue;
+      const g = gcd(m, q), M = m / g, Q = q / g, top = (M === 1 ? "" : M) + "\\sqrt{" + k + "}";
+      return { neg, abs: Q === 1 ? top : "\\frac{" + top + "}{" + Q + "}", zero: false, one: false, exact: true };
+    }
+  }
+  return null;
+}
+function decimalNum(v) {
+  const r = Math.round(v * 1000) / 1000;
+  if (r === 0) return { neg: false, abs: "0", zero: true, one: false, exact: Math.abs(v) < 1e-12 };
+  let s = Math.abs(r).toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
+  return { neg: r < 0, abs: s, zero: false, one: s === "1", exact: Math.abs(v - r) < 1e-9 };
+}
+function fmt(v, exactMode) {
+  if (exactMode) { const e = exactify(v); if (e) return e; }
+  return decimalNum(v);
+}
+const sgn = (n) => n.zero ? "0" : (n.neg ? "-" : "") + n.abs;
+function shifted(name, n) { return n.zero ? name : "(" + name + (n.neg ? " + " : " - ") + n.abs + ")"; }
+function linComb(terms) {
+  let out = "", first = true;
+  for (const t of terms) {
+    if (t.c.zero) continue;
+    const coef = (t.c.one && t.f) ? "" : t.c.abs;
+    out += first ? (t.c.neg ? "-" : "") + coef + t.f : (t.c.neg ? " - " : " + ") + coef + t.f;
+    first = false;
+  }
+  return first ? "0" : out;
+}
+
+/* =====================================================================
+   Three.js scene
+   ===================================================================== */
+const canvas = $("view");
+const stage = $("stage");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 1000);
+camera.up.set(0, 0, 1);
+scene.add(camera);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.55));
+const keyLight = new THREE.DirectionalLight(0xffffff, 0.75);
+keyLight.position.set(0.6, 1.2, 1.5);
+camera.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
+fillLight.position.set(-1, -0.6, -0.4);
+camera.add(fillLight);
+
+// Pointer listener must be registered before OrbitControls so dragging the point can disable orbiting.
+let pointerStart = null, draggingPoint = false;
+canvas.addEventListener("pointerdown", onPointerDown);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.12;
+controls.rotateSpeed = 0.9;
+controls.zoomSpeed = 1.0;
+
+const surfMat = new THREE.MeshPhongMaterial({
+  color: state.surfColor, side: THREE.DoubleSide, shininess: 35, specular: 0x222222,
+  transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1
+});
+let surfMesh = null;
+const gridGroup = new THREE.Group(); scene.add(gridGroup);
+const axesGroup = new THREE.Group(); scene.add(axesGroup);
+const contourGroup = new THREE.Group(); scene.add(contourGroup);
+const pointGroup = new THREE.Group(); scene.add(pointGroup);
+
+let colors = {};
+function readTokens() {
+  const cs = getComputedStyle(document.documentElement);
+  const g = (n) => cs.getPropertyValue(n).trim();
+  colors = { stage: g("--stage"), ink: g("--ink"), muted: g("--muted"), grid: g("--grid"), x: g("--ax-x"), y: g("--ax-y"), z: g("--ax-z"), gold: g("--gold") };
+  scene.background = new THREE.Color(colors.stage);
+}
+
+function boxSpan() { const b = state.box; return Math.max(b.xmax - b.xmin, b.ymax - b.ymin, b.zmax - b.zmin); }
+function boxCenter() { const b = state.box; return new THREE.Vector3((b.xmin + b.xmax) / 2, (b.ymin + b.ymax) / 2, (b.zmin + b.zmax) / 2); }
+
+function disposeGroup(g) {
+  while (g.children.length) {
+    const c = g.children.pop();
+    c.traverse((o) => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); }
+    });
+  }
+}
+
+/* ---------- Grid sampling and marching squares ---------- */
+function sampleGrid(g, u0, u1, v0, v1, nu, nv) {
+  const vals = new Float64Array((nu + 1) * (nv + 1));
+  const du = (u1 - u0) / nu, dv = (v1 - v0) / nv;
+  for (let i = 0; i <= nu; i++) {
+    const u = u0 + i * du;
+    for (let j = 0; j <= nv; j++) vals[i * (nv + 1) + j] = g(u, v0 + j * dv);
+  }
+  return { vals, u0, v0, du, dv, nu, nv };
+}
+function marchSquares(G, level) {
+  const { vals, u0, v0, du, dv, nu, nv } = G, segs = [];
+  const W = nv + 1;
+  for (let i = 0; i < nu; i++) {
+    for (let j = 0; j < nv; j++) {
+      const a = vals[i * W + j] - level, b = vals[(i + 1) * W + j] - level, c = vals[(i + 1) * W + j + 1] - level, d = vals[i * W + j + 1] - level;
+      if (!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c) && Number.isFinite(d))) continue;
+      const sa = a < 0, sb = b < 0, sc = c < 0, sd = d < 0;
+      if (sa === sb && sb === sc && sc === sd) continue;
+      const u = u0 + i * du, v = v0 + j * dv;
+      const E = [null, null, null, null];
+      if (sa !== sb) { const t = a / (a - b); E[0] = [u + t * du, v]; }
+      if (sb !== sc) { const t = b / (b - c); E[1] = [u + du, v + t * dv]; }
+      if (sc !== sd) { const t = c / (c - d); E[2] = [u + du - t * du, v + dv]; }
+      if (sd !== sa) { const t = d / (d - a); E[3] = [u, v + dv - t * dv]; }
+      const pts = E.filter(Boolean);
+      if (pts.length === 2) segs.push(pts[0], pts[1]);
+      else if (pts.length === 4) {
+        const ctr = (a + b + c + d) / 4;
+        if ((ctr < 0) === sa) segs.push(E[0], E[1], E[2], E[3]);
+        else segs.push(E[3], E[0], E[1], E[2]);
+      }
+    }
+  }
+  return segs; // pairs of [u,v]
+}
+function lineSegments(positions, color, opacity, vertexColors) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  if (vertexColors) geo.setAttribute("color", new THREE.Float32BufferAttribute(vertexColors, 3));
+  const mat = new THREE.LineBasicMaterial({ color: vertexColors ? 0xffffff : color, vertexColors: !!vertexColors, transparent: opacity < 1, opacity });
+  return new THREE.LineSegments(geo, mat);
+}
+function pushPolyline(out, pts) { // pts: array of [x,y,z] or null for breaks
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const p = pts[i], q = pts[i + 1];
+    if (p && q) out.push(p[0], p[1], p[2], q[0], q[1], q[2]);
+  }
+}
+function niceStep(span, target) {
+  const raw = span / target, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+  return (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p;
+}
+function inZ(z) { return Number.isFinite(z) && z >= state.box.zmin - 1e-9 && z <= state.box.zmax + 1e-9; }
+
+/* ---------- Surface meshes ---------- */
+function buildExplicit() {
+  const b = state.box, N = state.res.explicit;
+  const dx = (b.xmax - b.xmin) / N, dy = (b.ymax - b.ymin) / N, W = N + 1;
+  const zs = new Float64Array(W * W);
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    const z = S.f(b.xmin + i * dx, b.ymin + j * dy);
+    zs[i * W + j] = z;
+    if (Number.isFinite(z)) { if (z < lo) lo = z; if (z > hi) hi = z; }
+  }
+  if (lo === Infinity) throw new Error("f(x, y) is undefined everywhere in this box. Try a different x or y range.");
+  if (state.autoZ) {
+    const R = 2 * Math.max(Math.abs(b.xmin), Math.abs(b.xmax), Math.abs(b.ymin), Math.abs(b.ymax), 1);
+    let zl = Math.max(lo, -R), zh = Math.min(hi, R);
+    if (zh - zl < 1e-6) { zl -= 1; zh += 1; }
+    const pad = 0.04 * (zh - zl);
+    b.zmin = +(zl - pad).toFixed(3); b.zmax = +(zh + pad).toFixed(3);
+    $("zmin").value = b.zmin; $("zmax").value = b.zmax;
+  }
+  const pos = new Float32Array(W * W * 3), valid = new Uint8Array(W * W);
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    const k = i * W + j, z = zs[k];
+    pos[3 * k] = b.xmin + i * dx; pos[3 * k + 1] = b.ymin + j * dy; pos[3 * k + 2] = Number.isFinite(z) ? z : 0;
+    valid[k] = inZ(z) ? 1 : 0;
+  }
+  const idx = [];
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const a = i * W + j, bb = (i + 1) * W + j, c = (i + 1) * W + j + 1, d = i * W + j + 1;
+    const va = valid[a], vb = valid[bb], vc = valid[c], vd = valid[d], n = va + vb + vc + vd;
+    if (n === 4) idx.push(a, bb, c, a, c, d);
+    else if (n === 3) {
+      const q = [a, bb, c, d].filter((v) => valid[v]);
+      idx.push(q[0], q[1], q[2]);
+    }
+  }
+  if (!idx.length) throw new Error("No part of the surface lies inside the z range. Widen z or turn on “Fit z to the surface.”");
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const nrm = geo.attributes.normal.array;
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    const k = i * W + j; if (!valid[k]) continue;
+    const x = pos[3 * k], y = pos[3 * k + 1];
+    const gx = S.fx(x, y), gy = S.fy(x, y);
+    if (Number.isFinite(gx) && Number.isFinite(gy)) {
+      const L = Math.hypot(gx, gy, 1);
+      nrm[3 * k] = -gx / L; nrm[3 * k + 1] = -gy / L; nrm[3 * k + 2] = 1 / L;
+    }
+  }
+  geo.attributes.normal.needsUpdate = true;
+  geo.computeBoundingSphere();
+  return { geo, zs, N, W, dx, dy };
+}
+
+const TETS = [[0, 5, 1, 6], [0, 1, 2, 6], [0, 2, 3, 6], [0, 3, 7, 6], [0, 7, 4, 6], [0, 4, 5, 6]];
+const CORNERS = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]];
+function implicitGrad(x, y, z) { return [S.Fx(x, y, z), S.Fy(x, y, z), S.Fz(x, y, z)]; }
+function buildImplicit() {
+  const b = state.box, n = state.res.implicit, W = n + 1;
+  const hx = (b.xmax - b.xmin) / n, hy = (b.ymax - b.ymin) / n, hz = (b.zmax - b.zmin) / n;
+  const V = new Float64Array(W * W * W);
+  let any = false;
+  for (let i = 0; i <= n; i++) { const x = b.xmin + i * hx;
+    for (let j = 0; j <= n; j++) { const y = b.ymin + j * hy;
+      for (let k = 0; k <= n; k++) { const v = S.F(x, y, b.zmin + k * hz); V[(i * W + j) * W + k] = v; if (Number.isFinite(v)) any = true; } } }
+  if (!any) throw new Error("F is undefined everywhere in this box. Check the formula or the ranges.");
+  const out = [];
+  const cv = new Float64Array(8), cp = new Array(8);
+  for (let c = 0; c < 8; c++) cp[c] = [0, 0, 0];
+  const interp = (pa, va, pb, vb) => { const t = va / (va - vb); return [pa[0] + t * (pb[0] - pa[0]), pa[1] + t * (pb[1] - pa[1]), pa[2] + t * (pb[2] - pa[2])]; };
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) {
+    let neg = 0, bad = false;
+    for (let c = 0; c < 8; c++) {
+      const o = CORNERS[c], v = V[((i + o[0]) * W + (j + o[1])) * W + (k + o[2])];
+      if (!Number.isFinite(v)) { bad = true; break; }
+      cv[c] = v; if (v < 0) neg++;
+      cp[c][0] = b.xmin + (i + o[0]) * hx; cp[c][1] = b.ymin + (j + o[1]) * hy; cp[c][2] = b.zmin + (k + o[2]) * hz;
+    }
+    if (bad || neg === 0 || neg === 8) continue;
+    for (const T of TETS) {
+      const ins = T.filter((c) => cv[c] < 0), outs = T.filter((c) => cv[c] >= 0);
+      if (ins.length === 0 || ins.length === 4) continue;
+      if (ins.length === 1 || ins.length === 3) {
+        const lone = ins.length === 1 ? ins[0] : outs[0];
+        const others = ins.length === 1 ? outs : ins;
+        for (const o of others) out.push(interp(cp[lone], cv[lone], cp[o], cv[o]));
+      } else {
+        const [a, bq] = ins, [c, d] = outs;
+        const pac = interp(cp[a], cv[a], cp[c], cv[c]), pad = interp(cp[a], cv[a], cp[d], cv[d]);
+        const pbd = interp(cp[bq], cv[bq], cp[d], cv[d]), pbc = interp(cp[bq], cv[bq], cp[c], cv[c]);
+        out.push(pac, pad, pbd, pac, pbd, pbc);
+      }
+    }
+  }
+  if (!out.length) throw new Error("No part of the surface lies inside this box. Try widening the ranges.");
+  const pos = new Float32Array(out.length * 3), nrm = new Float32Array(out.length * 3);
+  for (let t = 0; t < out.length; t += 3) {
+    const P = [out[t], out[t + 1], out[t + 2]];
+    const e1 = [P[1][0] - P[0][0], P[1][1] - P[0][1], P[1][2] - P[0][2]], e2 = [P[2][0] - P[0][0], P[2][1] - P[0][1], P[2][2] - P[0][2]];
+    const fn = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+    const G = P.map((p) => implicitGrad(p[0], p[1], p[2]));
+    const avg = [0, 0, 0];
+    for (const g of G) if (g.every(Number.isFinite)) { const L = Math.hypot(g[0], g[1], g[2]) || 1; avg[0] += g[0] / L; avg[1] += g[1] / L; avg[2] += g[2] / L; }
+    let order = [0, 1, 2];
+    if (fn[0] * avg[0] + fn[1] * avg[1] + fn[2] * avg[2] < 0) order = [0, 2, 1];
+    const fL = Math.hypot(fn[0], fn[1], fn[2]) || 1;
+    for (let s = 0; s < 3; s++) {
+      const p = P[order[s]], g = G[order[s]], w = 3 * (t + s);
+      pos[w] = p[0]; pos[w + 1] = p[1]; pos[w + 2] = p[2];
+      let L = Math.hypot(g[0], g[1], g[2]);
+      if (Number.isFinite(L) && L > 1e-12) { nrm[w] = g[0] / L; nrm[w + 1] = g[1] / L; nrm[w + 2] = g[2] / L; }
+      else { const sgnF = (fn[0] * avg[0] + fn[1] * avg[1] + fn[2] * avg[2] < 0) ? -1 : 1; nrm[w] = sgnF * fn[0] / fL; nrm[w + 1] = sgnF * fn[1] / fL; nrm[w + 2] = sgnF * fn[2] / fL; }
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("normal", new THREE.BufferAttribute(nrm, 3));
+  geo.computeBoundingSphere();
+  return { geo };
+}
+
+/* ---------- Grid lines on the surface ---------- */
+let explicitCache = null;
+function buildGridLines() {
+  disposeGroup(gridGroup);
+  if (!state.showGrid || !S) return;
+  const b = state.box, arr = [];
+  const sx = niceStep(b.xmax - b.xmin, 10), sy = niceStep(b.ymax - b.ymin, 10);
+  const xs = [], ys = [];
+  for (let v = Math.ceil(b.xmin / sx) * sx; v <= b.xmax + 1e-9; v += sx) xs.push(+v.toFixed(10));
+  for (let v = Math.ceil(b.ymin / sy) * sy; v <= b.ymax + 1e-9; v += sy) ys.push(+v.toFixed(10));
+  if (S.mode === "explicit") {
+    const M = 240;
+    for (const x0 of xs) { const pts = []; for (let j = 0; j <= M; j++) { const y = b.ymin + (b.ymax - b.ymin) * j / M, z = S.f(x0, y); pts.push(inZ(z) ? [x0, y, z] : null); } pushPolyline(arr, pts); }
+    for (const y0 of ys) { const pts = []; for (let i = 0; i <= M; i++) { const x = b.xmin + (b.xmax - b.xmin) * i / M, z = S.f(x, y0); pts.push(inZ(z) ? [x, y0, z] : null); } pushPolyline(arr, pts); }
+  } else {
+    const M = 90;
+    for (const x0 of xs) { const G = sampleGrid((y, z) => S.F(x0, y, z), b.ymin, b.ymax, b.zmin, b.zmax, M, M); for (const p of marchSquares(G, 0)) arr.push(x0, p[0], p[1]); }
+    for (const y0 of ys) { const G = sampleGrid((x, z) => S.F(x, y0, z), b.xmin, b.xmax, b.zmin, b.zmax, M, M); for (const p of marchSquares(G, 0)) arr.push(p[0], y0, p[1]); }
+  }
+  if (arr.length) gridGroup.add(lineSegments(arr, colors.ink, 0.28));
+}
+
+/* ---------- Level curves ---------- */
+const RAMP = ["#2c7bb6", "#00a6ca", "#90c956", "#f9d057", "#f29e2e", "#d7191c"].map((c) => new THREE.Color(c));
+function rampColor(t) {
+  const x = Math.min(0.9999, Math.max(0, t)) * (RAMP.length - 1), i = Math.floor(x), f = x - i;
+  return RAMP[i].clone().lerp(RAMP[i + 1], f);
+}
+function buildContours() {
+  disposeGroup(contourGroup);
+  if (!state.showContours || !S) return;
+  const b = state.box, n = state.nContours, onSurf = [], onFloor = [], cS = [], cF = [];
+  const floor = b.zmin;
+  let levels = [];
+  let lo = b.zmin, hi = b.zmax;
+  if (S.mode === "explicit" && explicitCache) {
+    let a = Infinity, c = -Infinity;
+    for (const z of explicitCache.zs) if (inZ(z)) { if (z < a) a = z; if (z > c) c = z; }
+    if (a < c) { lo = a; hi = c; }
+  }
+  for (let i = 1; i <= n; i++) levels.push(lo + (hi - lo) * i / (n + 1));
+  const M = S.mode === "explicit" ? Math.min(state.res.explicit, 160) : 110;
+  const Gx = S.mode === "explicit" ? sampleGrid((x, y) => S.f(x, y), b.xmin, b.xmax, b.ymin, b.ymax, M, M) : null;
+  levels.forEach((k, li) => {
+    const G = Gx || sampleGrid((x, y) => S.F(x, y, k), b.xmin, b.xmax, b.ymin, b.ymax, M, M);
+    const segs = marchSquares(G, Gx ? k : 0);
+    const col = rampColor(li / Math.max(1, n - 1));
+    for (const p of segs) {
+      onSurf.push(p[0], p[1], k); cS.push(col.r, col.g, col.b);
+      onFloor.push(p[0], p[1], floor); cF.push(col.r, col.g, col.b);
+    }
+  });
+  if (onSurf.length) {
+    contourGroup.add(lineSegments(onSurf, 0xffffff, 1, cS));
+    contourGroup.add(lineSegments(onFloor, 0xffffff, 0.85, cF));
+  }
+  // floor outline
+  const fo = [b.xmin, b.ymin, floor, b.xmax, b.ymin, floor, b.xmax, b.ymin, floor, b.xmax, b.ymax, floor, b.xmax, b.ymax, floor, b.xmin, b.ymax, floor, b.xmin, b.ymax, floor, b.xmin, b.ymin, floor];
+  contourGroup.add(lineSegments(fo, colors.grid, 0.5));
+}
+
+/* ---------- Axes ---------- */
+function makeLabel(text, color, h, weight) {
+  const c = document.createElement("canvas"), ctx = c.getContext("2d");
+  const fontPx = 64;
+  const font = (weight || "500") + " " + fontPx + "px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = font;
+  const w = Math.ceil(ctx.measureText(text).width) + 16;
+  c.width = w; c.height = fontPx + 16;
+  ctx.font = font; ctx.fillStyle = color; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(text, w / 2, c.height / 2 + 2);
+  const tex = new THREE.CanvasTexture(c);
+  tex.minFilter = THREE.LinearFilter;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(h * c.width / c.height, h, 1);
+  return sp;
+}
+function buildAxes() {
+  disposeGroup(axesGroup);
+  if (!state.showAxes) return;
+  const b = state.box, span = boxSpan(), pad = 0.08 * span;
+  const cl = (v, a, c) => Math.min(c, Math.max(a, v));
+  const ox = cl(0, b.xmin, b.xmax), oy = cl(0, b.ymin, b.ymax), oz = cl(0, b.zmin, b.zmax);
+  const defs = [
+    { c: colors.x, from: [b.xmin, oy, oz], to: [b.xmax + pad, oy, oz], lab: "x", ax: 0, lo: b.xmin, hi: b.xmax },
+    { c: colors.y, from: [ox, b.ymin, oz], to: [ox, b.ymax + pad, oz], lab: "y", ax: 1, lo: b.ymin, hi: b.ymax },
+    { c: colors.z, from: [ox, oy, b.zmin], to: [ox, oy, b.zmax + pad], lab: "z", ax: 2, lo: b.zmin, hi: b.zmax }
+  ];
+  const tickH = 0.028 * span;
+  for (const d of defs) {
+    axesGroup.add(lineSegments([...d.from, ...d.to], d.c, 1));
+    const dir = new THREE.Vector3(d.to[0] - d.from[0], d.to[1] - d.from[1], d.to[2] - d.from[2]).normalize();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.018 * span, 0.06 * span, 16), new THREE.MeshBasicMaterial({ color: d.c }));
+    cone.position.set(...d.to);
+    cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    axesGroup.add(cone);
+    const L = makeLabel(d.lab, d.c, 0.065 * span, "600");
+    L.position.set(d.to[0] + dir.x * 0.06 * span, d.to[1] + dir.y * 0.06 * span, d.to[2] + dir.z * 0.06 * span);
+    axesGroup.add(L);
+    const step = niceStep(d.hi - d.lo, 6);
+    for (let v = Math.ceil(d.lo / step) * step; v <= d.hi + 1e-9; v += step) {
+      const vv = +v.toFixed(8);
+      if (Math.abs(vv) < 1e-9) continue;
+      const p = [ox, oy, oz]; p[d.ax] = vv;
+      const t = makeLabel(String(vv), colors.muted, tickH, "400");
+      const off = [0, 0, 0];
+      if (d.ax === 2) off[0] = -0.035 * span; else off[2] = -0.03 * span;
+      t.position.set(p[0] + off[0], p[1] + off[1], p[2] + off[2]);
+      axesGroup.add(t);
+      const tk = 0.012 * span, q = [...p], r = [...p];
+      if (d.ax === 2) { q[0] -= tk; r[0] += tk; } else { q[2] -= tk; r[2] += tk; }
+      axesGroup.add(lineSegments([...q, ...r], d.c, 1));
+    }
+  }
+  // faint grid in the plane z = 0 (or the floor, if 0 is outside the box)
+  const gz = oz, s = niceStep(Math.max(b.xmax - b.xmin, b.ymax - b.ymin), 10), arr = [];
+  for (let x = Math.ceil(b.xmin / s) * s; x <= b.xmax + 1e-9; x += s) arr.push(x, b.ymin, gz, x, b.ymax, gz);
+  for (let y = Math.ceil(b.ymin / s) * s; y <= b.ymax + 1e-9; y += s) arr.push(b.xmin, y, gz, b.xmax, y, gz);
+  axesGroup.add(lineSegments(arr, colors.grid, 0.22));
+}
+
+/* ---------- Camera ---------- */
+const VIEWS = { iso: [1.15, 0.85, 0.7], xy: [0, -0.0001, 1], xz: [0, -1, 0.0001], yz: [1, 0, 0.0001] };
+function setView(name) {
+  const c = boxCenter(), b = state.box;
+  const r = 0.5 * Math.hypot(b.xmax - b.xmin, b.ymax - b.ymin, b.zmax - b.zmin);
+  const aspect = Math.max(0.5, Math.min(1, camera.aspect));
+  const d = 1.08 * r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) / aspect;
+  const v = new THREE.Vector3(...VIEWS[name]).normalize();
+  camera.position.copy(c).addScaledVector(v, d);
+  camera.near = d / 200; camera.far = d * 20; camera.updateProjectionMatrix();
+  controls.target.copy(c);
+  controls.update();
+}
+
+/* =====================================================================
+   Plotting
+   ===================================================================== */
+function showErr(msg) { $("err").textContent = msg || ""; }
+function readBox() {
+  const g = (id) => parseFloat($(id).value);
+  const nb = { xmin: g("xmin"), xmax: g("xmax"), ymin: g("ymin"), ymax: g("ymax"), zmin: g("zmin"), zmax: g("zmax") };
+  for (const k in nb) if (!Number.isFinite(nb[k])) throw new Error("Every viewing-box entry needs a number.");
+  if (nb.xmin >= nb.xmax || nb.ymin >= nb.ymax || nb.zmin >= nb.zmax) throw new Error("Each min must be less than its max.");
+  return nb;
+}
+function writeBox() { for (const k of ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax"]) $(k).value = state.box[k]; }
+
+function plot(opts) {
+  opts = opts || {};
+  showErr("");
+  let compiled, box;
+  try {
+    box = readBox();
+    compiled = compileSurface(state.mode, $("expr").value);
+  } catch (e) { showErr(e.message); return false; }
+  const prevBox = JSON.stringify(state.box);
+  state.box = box;
+  state.expr[state.mode] = $("expr").value;
+  const prevS = S; S = compiled;
+  let built;
+  try { built = state.mode === "explicit" ? buildExplicit() : buildImplicit(); }
+  catch (e) { S = prevS; state.box = JSON.parse(prevBox); writeBox(); showErr(e.message); return false; }
+  explicitCache = state.mode === "explicit" ? built : null;
+  if (surfMesh) { scene.remove(surfMesh); surfMesh.geometry.dispose(); }
+  surfMesh = new THREE.Mesh(built.geo, surfMat);
+  surfMesh.renderOrder = 1;
+  scene.add(surfMesh);
+  applySurfaceLook();
+  buildGridLines(); buildAxes(); buildContours();
+  if (opts.resetView || JSON.stringify(state.box) !== prevBox) setView("iso");
+  if (opts.point) placeFromCoords(opts.point);
+  else if (state.point) placeFromCoords([state.point.x, state.point.y, state.point.z]);
+  else refreshPoint();
+  return true;
+}
+function applySurfaceLook() {
+  surfMat.color.set(state.surfColor);
+  surfMat.opacity = state.surfOpacity;
+  surfMat.transparent = state.surfOpacity < 0.999;
+  surfMat.depthWrite = state.surfOpacity > 0.95;
+  surfMat.needsUpdate = true;
+}
+
+/* =====================================================================
+   Point, tangent plane, normal, traces
+   ===================================================================== */
+const markerMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+const marker = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), markerMat);
+const markerHit = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+const planeMat = new THREE.MeshPhongMaterial({ color: state.planeColor, side: THREE.DoubleSide, transparent: true, opacity: state.planeOpacity, depthWrite: false, shininess: 10 });
+const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), planeMat);
+planeMesh.matrixAutoUpdate = false; planeMesh.renderOrder = 3;
+const planeEdge = lineSegments([-.5, -.5, 0, .5, -.5, 0, .5, -.5, 0, .5, .5, 0, .5, .5, 0, -.5, .5, 0, -.5, .5, 0, -.5, -.5, 0], state.planeColor, 1);
+planeEdge.matrixAutoUpdate = false;
+const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(), 1, 0x000000);
+const traceGroup = new THREE.Group();
+pointGroup.add(planeMesh, planeEdge, arrow, traceGroup, marker, markerHit);
+pointGroup.visible = false;
+
+function projectToImplicit(p) {
+  let x = p[0], y = p[1], z = p[2];
+  for (let k = 0; k < 30; k++) {
+    const F = S.F(x, y, z), g = implicitGrad(x, y, z), gg = g[0] * g[0] + g[1] * g[1] + g[2] * g[2];
+    if (!Number.isFinite(F) || !Number.isFinite(gg) || gg < 1e-18) break;
+    const s = F / gg; x -= s * g[0]; y -= s * g[1]; z -= s * g[2];
+    if (Math.abs(F) < 1e-13) break;
+  }
+  return [x, y, z];
+}
+function snapImplicit(p, step) {
+  const g = implicitGrad(p[0], p[1], p[2]);
+  const m = [0, 1, 2].reduce((a, c) => (Math.abs(g[c]) > Math.abs(g[a]) ? c : a), 0);
+  const q = p.map((v, i) => i === m ? v : Math.round(v / step) * step);
+  const dF = [S.Fx, S.Fy, S.Fz][m];
+  for (let k = 0; k < 40; k++) {
+    const F = S.F(q[0], q[1], q[2]), d = dF(q[0], q[1], q[2]);
+    if (!Number.isFinite(F) || !Number.isFinite(d) || Math.abs(d) < 1e-14) return null;
+    q[m] -= F / d;
+    if (Math.abs(F) < 1e-14) break;
+  }
+  if (Math.abs(S.F(q[0], q[1], q[2])) > 1e-8) return null;
+  if (Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) > 0.25 * boxSpan()) return null;
+  // tidy the solved coordinate if it is essentially a nice number
+  const e = exactify(q[m]); if (e) { const r = Math.round(q[m] * 3600) / 3600; if (Math.abs(r - q[m]) < 1e-9) q[m] = r; }
+  return q;
+}
+
+function placeFromCoords(c) {
+  if (!S) return;
+  if (S.mode === "explicit") {
+    let x = c[0], y = c[1];
+    if (state.exact) { x = Math.round(x / state.snap) * state.snap; y = Math.round(y / state.snap) * state.snap; }
+    state.point = { x, y, z: S.f(x, y) };
+  } else {
+    let p = projectToImplicit([c[0], c[1], Number.isFinite(c[2]) ? c[2] : 0]);
+    if (state.exact) { const q = snapImplicit(p, state.snap); if (q) p = q; }
+    state.point = { x: p[0], y: p[1], z: p[2] };
+  }
+  refreshPoint();
+}
+
+let snapNote = false;
+function refreshPoint() {
+  const P = state.point;
+  if (!P || !S) { pointGroup.visible = false; queueCard(); syncPointInputs(); return; }
+  const span = boxSpan();
+  const info = { ok: false };
+  if (S.mode === "explicit") {
+    const z = P.z, fx = S.fx(P.x, P.y), fy = S.fy(P.x, P.y);
+    info.P = [P.x, P.y, z];
+    if (!Number.isFinite(z)) info.msg = "f is not defined at this point.";
+    else if (!Number.isFinite(fx) || !Number.isFinite(fy)) info.msg = "f is not differentiable here (a partial derivative does not exist), so there is no tangent plane at this point.";
+    else { info.ok = true; info.n = [-fx, -fy, 1]; info.fx = fx; info.fy = fy; }
+  } else {
+    const g = implicitGrad(P.x, P.y, P.z), res = S.F(P.x, P.y, P.z);
+    info.P = [P.x, P.y, P.z];
+    if (!Number.isFinite(res) || Math.abs(res) > 1e-6 * Math.max(1, span)) info.msg = "This point is not on the surface. Use Set point to move it onto the surface.";
+    else if (!g.every(Number.isFinite)) info.msg = "A partial derivative of F does not exist here, so the tangent plane is not defined.";
+    else if (Math.hypot(...g) < 1e-9) info.msg = "∇F = 0 at this point, so the gradient gives no normal vector. The surface has no tangent plane here (think of a cone's vertex).";
+    else { info.ok = true; info.grad = g; info.n = g.slice(); }
+  }
+  state.info = info;
+
+  const Pv = new THREE.Vector3(...info.P.map((v) => Number.isFinite(v) ? v : 0));
+  const r = 0.014 * span;
+  marker.position.copy(Pv); marker.scale.setScalar(r);
+  markerHit.position.copy(Pv); markerHit.scale.setScalar(r * 3.2);
+  markerMat.color.set(colors.ink);
+  pointGroup.visible = Number.isFinite(info.P[2]);
+
+  planeMesh.visible = planeEdge.visible = info.ok && state.showPlane;
+  arrow.visible = info.ok && state.showNormal;
+  disposeGroup(traceGroup);
+  if (info.ok) {
+    const n = new THREE.Vector3(...info.n).normalize();
+    let u = new THREE.Vector3(1, 0, 0).addScaledVector(n, -n.x);
+    if (u.lengthSq() < 1e-6) u = new THREE.Vector3(0, 1, 0).addScaledVector(n, -n.y);
+    u.normalize();
+    const v = new THREE.Vector3().crossVectors(n, u).normalize();
+    const size = state.planeSize * span;
+    const m = new THREE.Matrix4().makeBasis(u.clone().multiplyScalar(size), v.clone().multiplyScalar(size), n);
+    m.setPosition(Pv);
+    planeMesh.matrix.copy(m); planeEdge.matrix.copy(m);
+    planeMesh.matrixWorldNeedsUpdate = true; planeEdge.matrixWorldNeedsUpdate = true;
+    planeMat.color.set(state.planeColor); planeMat.opacity = state.planeOpacity; planeMat.transparent = state.planeOpacity < 0.999;
+    planeEdge.material.color.set(state.planeColor);
+    arrow.position.copy(Pv);
+    arrow.setDirection(n);
+    arrow.setLength(0.22 * span, 0.05 * span, 0.028 * span);
+    arrow.setColor(new THREE.Color(colors.ink));
+    if (state.showTraces) buildTraces(info, Pv, span);
+  }
+  syncPointInputs();
+  queueCard();
+}
+
+function quad(p1, p2, p3, p4, color, opacity) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute([...p1, ...p2, ...p3, ...p1, ...p3, ...p4], 3));
+  return new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false }));
+}
+function buildTraces(info, Pv, span) {
+  const b = state.box, [x0, y0, z0] = info.P, L = 0.38 * span;
+  traceGroup.add(quad([b.xmin, y0, b.zmin], [b.xmax, y0, b.zmin], [b.xmax, y0, b.zmax], [b.xmin, y0, b.zmax], colors.x, 0.07));
+  traceGroup.add(quad([x0, b.ymin, b.zmin], [x0, b.ymax, b.zmin], [x0, b.ymax, b.zmax], [x0, b.ymin, b.zmax], colors.y, 0.07));
+  const cx = [], cy = [];
+  if (S.mode === "explicit") {
+    const M = 300, px = [], py = [];
+    for (let i = 0; i <= M; i++) { const x = b.xmin + (b.xmax - b.xmin) * i / M, z = S.f(x, y0); px.push(inZ(z) ? [x, y0, z] : null); }
+    for (let j = 0; j <= M; j++) { const y = b.ymin + (b.ymax - b.ymin) * j / M, z = S.f(x0, y); py.push(inZ(z) ? [x0, y, z] : null); }
+    pushPolyline(cx, px); pushPolyline(cy, py);
+  } else {
+    const M = 140;
+    const Gx = sampleGrid((x, z) => S.F(x, y0, z), b.xmin, b.xmax, b.zmin, b.zmax, M, M);
+    for (const p of marchSquares(Gx, 0)) cx.push(p[0], y0, p[1]);
+    const Gy = sampleGrid((y, z) => S.F(x0, y, z), b.ymin, b.ymax, b.zmin, b.zmax, M, M);
+    for (const p of marchSquares(Gy, 0)) cy.push(x0, p[0], p[1]);
+  }
+  if (cx.length) traceGroup.add(lineSegments(cx, colors.x, 1));
+  if (cy.length) traceGroup.add(lineSegments(cy, colors.y, 1));
+  const n = info.n;
+  const dx = new THREE.Vector3(n[2], 0, -n[0]), dy = new THREE.Vector3(0, n[2], -n[1]);
+  for (const [d, c] of [[dx, colors.x], [dy, colors.y]]) {
+    if (d.lengthSq() < 1e-14) continue;
+    d.normalize();
+    const a = Pv.clone().addScaledVector(d, -L), e = Pv.clone().addScaledVector(d, L);
+    const ln = lineSegments([a.x, a.y, a.z, e.x, e.y, e.z], c, 1);
+    ln.renderOrder = 4;
+    traceGroup.add(ln);
+  }
+}
+
+function syncPointInputs() {
+  const P = state.point, r = (v) => Number.isFinite(v) ? +v.toFixed(4) : "";
+  if (document.activeElement && ["px", "py", "pz"].includes(document.activeElement.id)) return;
+  $("px").value = P ? r(P.x) : ""; $("py").value = P ? r(P.y) : ""; $("pz").value = P ? r(P.z) : "";
+}
+
+/* =====================================================================
+   Equation card
+   ===================================================================== */
+let cardQueued = false, latexForCopy = "";
+function queueCard() { if (cardQueued) return; cardQueued = true; requestAnimationFrame(() => { cardQueued = false; renderCard(); }); }
+function tex(t, display) {
+  if (window.MathJax && MathJax.tex2svg) {
+    try { const n = MathJax.tex2svg(t, { display: !!display }); return n; } catch (_) { /* fall through */ }
+  }
+  const s = document.createElement("code"); s.textContent = t; return s;
+}
+function renderCard() {
+  const body = $("eqbody");
+  body.innerHTML = "";
+  latexForCopy = "";
+  if (!S) { body.innerHTML = '<p class="empty">Plot a surface to begin.</p>'; return; }
+  const surf = document.createElement("div"); surf.className = "surf";
+  const sl = document.createElement("span"); sl.textContent = "Surface"; surf.append(sl, tex(S.tex));
+  body.append(surf);
+  const info = state.info;
+  if (!state.point || !info) {
+    $("eqTitle").textContent = "Tangent plane";
+    const p = document.createElement("p"); p.className = "empty";
+    p.textContent = "Click a point on the surface to see its tangent plane and equation.";
+    body.append(p);
+    return;
+  }
+  const ex = state.exact;
+  const Pn = info.P.map((v) => fmt(v, ex));
+  const Ptex = "P = (" + Pn.map(sgn).join(",\\ ") + ")";
+  $("eqTitle").textContent = "Tangent plane at P";
+  const givens = document.createElement("div"); givens.className = "givens";
+  givens.append(tex(Ptex));
+  if (!info.ok) {
+    body.append(givens);
+    const p = document.createElement("p"); p.className = "note warn"; p.textContent = info.msg; body.append(p);
+    return;
+  }
+  const n = info.n, N = n.map((v) => fmt(v, ex));
+  let givenTex = [];
+  const extra = [];
+  if (S.mode === "explicit") {
+    const at = "(" + sgn(Pn[0]) + "," + sgn(Pn[1]) + ")";
+    const FX = fmt(info.fx, ex), FY = fmt(info.fy, ex); extra.push(FX, FY);
+    givenTex.push("f_x" + at + " = " + sgn(FX), "f_y" + at + " = " + sgn(FY), "\\mathbf{n} = \\langle -f_x,\\ -f_y,\\ 1 \\rangle = \\langle " + N.map(sgn).join(",\\ ") + " \\rangle");
+  } else {
+    const G = info.grad.map((v) => fmt(v, ex)); extra.push(...G);
+    givenTex.push("\\mathbf{n} = \\nabla F(P) = \\langle " + G.map(sgn).join(",\\ ") + " \\rangle");
+  }
+  for (const g of givenTex) givens.append(tex(g));
+  body.append(givens);
+
+  const rows = [];
+  const [x0, y0, z0] = info.P, [a, b, c] = n;
+  rows.push({ k: "Point-normal", t: linComb([{ c: N[0], f: shifted("x", Pn[0]) }, { c: N[1], f: shifted("y", Pn[1]) }, { c: N[2], f: shifted("z", Pn[2]) }]) + " = 0", main: true });
+  const vertical = Math.abs(c) < 1e-10 * Math.max(1, Math.abs(a), Math.abs(b));
+  if (!vertical) {
+    const A = -a / c, B = -b / c, C = z0 - A * x0 - B * y0;
+    const An = fmt(A, ex), Bn = fmt(B, ex), Cn = fmt(C, ex);
+    rows.push({ k: "Solved for z", t: "z = " + linComb([{ c: Pn[2], f: "" }, { c: An, f: shifted("x", Pn[0]) }, { c: Bn, f: shifted("y", Pn[1]) }]), main: true });
+    rows.push({ k: "Slope form", t: "z = " + linComb([{ c: An, f: "x" }, { c: Bn, f: "y" }, { c: Cn, f: "" }]) });
+    N.push(An, Bn, Cn);
+  }
+  const d = a * x0 + b * y0 + c * z0, Dn = fmt(d, ex); N.push(Dn);
+  rows.push({ k: "Standard", t: linComb([{ c: N[0], f: "x" }, { c: N[1], f: "y" }, { c: N[2], f: "z" }]) + " = " + sgn(Dn) });
+  for (const r of rows) {
+    const row = document.createElement("div"); row.className = "eqrow" + (r.main ? " main" : "");
+    const k = document.createElement("span"); k.className = "k"; k.textContent = r.k;
+    const v = document.createElement("div"); v.className = "v"; v.append(tex(r.t, false));
+    row.append(k, v); body.append(row);
+  }
+  if (vertical) {
+    const p = document.createElement("p"); p.className = "note";
+    p.textContent = "This tangent plane is vertical (parallel to the z-axis), so it cannot be solved for z.";
+    body.append(p);
+  }
+  const approx = [...Pn, ...N, ...extra].some((x) => !x.exact);
+  if (approx) {
+    const p = document.createElement("p"); p.className = "note";
+    p.textContent = ex ? "Some values have no simple exact form and are shown rounded to 3 decimal places." : "Values are rounded to 3 decimal places.";
+    body.append(p);
+  }
+  if (state.showTraces) {
+    const lg = document.createElement("div"); lg.className = "legend";
+    lg.innerHTML = '<span><i style="background:var(--ax-x)"></i>Trace in the plane y = y₀ and its tangent line' + (S.mode === "explicit" ? " (slope f<sub>x</sub>)" : "") + '</span>' +
+      '<span><i style="background:var(--ax-y)"></i>Trace in the plane x = x₀ and its tangent line' + (S.mode === "explicit" ? " (slope f<sub>y</sub>)" : "") + '</span>';
+    body.append(lg);
+  }
+  latexForCopy = "% Tangent plane to " + S.tex + "\n" + Ptex + ",\\quad " + givenTex.join(",\\quad ") + "\n\\begin{align*}\n" +
+    rows.map((r) => "  &" + r.t + " && \\text{(" + r.k.toLowerCase() + ")}").join(" \\\\\n") + "\n\\end{align*}";
+}
+
+/* =====================================================================
+   Interaction
+   ===================================================================== */
+const raycaster = new THREE.Raycaster();
+function ndc(e) {
+  const r = canvas.getBoundingClientRect();
+  return new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+}
+function hitSurface(e) {
+  if (!surfMesh) return null;
+  raycaster.setFromCamera(ndc(e), camera);
+  const h = raycaster.intersectObject(surfMesh, false);
+  return h.length ? h[0].point : null;
+}
+function onPointerDown(e) {
+  pointerStart = { x: e.clientX, y: e.clientY, t: performance.now(), button: e.button };
+  if (e.button !== 0 || !state.point || !pointGroup.visible) return;
+  raycaster.setFromCamera(ndc(e), camera);
+  if (raycaster.intersectObject(markerHit, false).length) {
+    draggingPoint = true;
+    controls.enabled = false;
+    canvas.classList.add("grab");
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+}
+canvas.addEventListener("pointermove", (e) => {
+  if (!draggingPoint) return;
+  const p = hitSurface(e);
+  if (p) placeFromCoords([p.x, p.y, p.z]);
+});
+canvas.addEventListener("pointerup", (e) => {
+  if (draggingPoint) {
+    draggingPoint = false; controls.enabled = true; canvas.classList.remove("grab");
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    return;
+  }
+  if (!pointerStart || pointerStart.button !== 0) return;
+  const moved = Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y);
+  if (moved < 6 && performance.now() - pointerStart.t < 600) {
+    const p = hitSurface(e);
+    if (p) { placeFromCoords([p.x, p.y, p.z]); $("hint").hidden = true; }
+  }
+  pointerStart = null;
+});
+
+/* ---------- Panel wiring ---------- */
+function setMode(mode, fromPreset) {
+  state.mode = mode;
+  for (const b of $("modeSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+  $("exprPre").textContent = mode === "explicit" ? "z =" : "";
+  $("exprPre").hidden = mode !== "explicit";
+  $("exprHelp").innerHTML = mode === "explicit"
+    ? "Use <code>x</code> and <code>y</code>. Examples: <code>x^2 - y^2</code>, <code>sin(x)*cos(y)</code>, <code>sqrt(9 - x^2 - y^2)</code>. <code>log</code> is the natural log."
+    : "Write an equation in <code>x</code>, <code>y</code>, <code>z</code>, e.g. <code>x^2 + y^2 + z^2 = 9</code>. Without an = sign, it is read as F = 0.";
+  $("autoZWrap").hidden = mode !== "explicit";
+  $("pz").disabled = mode === "explicit";
+  $("res").min = mode === "explicit" ? 30 : 24; $("res").max = mode === "explicit" ? 200 : 96;
+  $("res").value = state.res[mode]; $("resOut").textContent = state.res[mode];
+  fillPresets();
+  if (!fromPreset) {
+    $("expr").value = state.expr[mode];
+    const match = PRESETS[mode].find((p) => p.expr === state.expr[mode]);
+    if (match) applyPreset(match, true); else { state.point = null; plot({ resetView: true }); }
+  }
+}
+function fillPresets() {
+  const sel = $("preset");
+  sel.innerHTML = '<option value="">Choose an example…</option>' + PRESETS[state.mode].map((p, i) => `<option value="${i}">${p.name}: ${p.mode === "implicit" ? "" : state.mode === "explicit" ? "z = " : ""}${p.expr}</option>`).join("");
+}
+function applyPreset(p, keepSelect) {
+  $("expr").value = p.expr;
+  const [a, b, c, d, e, f] = p.box;
+  Object.assign(state.box, { xmin: a, xmax: b, ymin: c, ymax: d, zmin: e, zmax: f });
+  writeBox();
+  state.autoZ = false; $("autoZ").checked = false;
+  state.point = null;
+  plot({ resetView: true, point: p.point ? [p.point[0], p.point[1], p.point[2] ?? 0] : null });
+  if (!keepSelect) $("preset").value = "";
+}
+
+function bindRange(id, key, fmtFn, after) {
+  const el = $(id), out = $(id + "Out");
+  el.value = state[key]; if (out) out.textContent = fmtFn(state[key]);
+  el.addEventListener("input", () => { state[key] = parseFloat(el.value); if (out) out.textContent = fmtFn(state[key]); after(); });
+}
+function bindCheck(id, key, after) {
+  const el = $(id); el.checked = state[key];
+  el.addEventListener("change", () => { state[key] = el.checked; after(); });
+}
+function initPanel() {
+  for (const b of $("modeSeg").querySelectorAll("button")) b.addEventListener("click", () => { if (b.dataset.mode !== state.mode) setMode(b.dataset.mode); });
+  $("expr").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); plot(); } });
+  $("plotBtn").addEventListener("click", () => { state.autoZ = $("autoZ").checked; state.res[state.mode] = parseInt($("res").value, 10); plot(); });
+  $("preset").addEventListener("change", (e) => { const i = e.target.value; if (i !== "") applyPreset(PRESETS[state.mode][+i]); });
+  $("autoZ").addEventListener("change", (e) => { state.autoZ = e.target.checked; if (state.autoZ) plot({ resetView: true }); });
+  $("res").addEventListener("input", (e) => { $("resOut").textContent = e.target.value; });
+  $("res").addEventListener("change", (e) => { state.res[state.mode] = parseInt(e.target.value, 10); plot(); });
+  for (const k of ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax"]) $(k).addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); plot(); } });
+
+  const sw = $("swatches");
+  for (const c of SWATCHES) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.style.background = c; b.setAttribute("aria-label", "Surface color " + c); b.dataset.c = c;
+    b.addEventListener("click", () => { state.surfColor = c; $("surfColor").value = c; syncSwatches(); applySurfaceLook(); });
+    sw.append(b);
+  }
+  $("surfColor").value = state.surfColor;
+  $("surfColor").addEventListener("input", (e) => { state.surfColor = e.target.value; syncSwatches(); applySurfaceLook(); });
+  syncSwatches();
+  const pct = (v) => Math.round(v * 100) + "%";
+  bindRange("surfOpacity", "surfOpacity", pct, applySurfaceLook);
+  $("planeColor").value = state.planeColor;
+  $("planeColor").addEventListener("input", (e) => { state.planeColor = e.target.value; refreshPoint(); });
+  bindRange("planeOpacity", "planeOpacity", pct, refreshPoint);
+  bindRange("planeSize", "planeSize", (v) => "×" + v.toFixed(2), refreshPoint);
+  bindCheck("showGrid", "showGrid", buildGridLines);
+  bindCheck("showAxes", "showAxes", buildAxes);
+  bindCheck("showPlane", "showPlane", refreshPoint);
+  bindCheck("showNormal", "showNormal", refreshPoint);
+  bindCheck("showTraces", "showTraces", refreshPoint);
+  bindCheck("showContours", "showContours", buildContours);
+  bindRange("nContours", "nContours", (v) => String(v), () => { if (state.showContours) buildContours(); });
+
+  for (const b of $("numSeg").querySelectorAll("button")) b.addEventListener("click", () => {
+    state.exact = b.dataset.num === "exact"; syncNumSeg();
+    if (state.point) placeFromCoords([state.point.x, state.point.y, state.point.z]); else queueCard();
+  });
+  $("snap").value = String(state.snap);
+  $("snap").addEventListener("change", (e) => { state.snap = parseFloat(e.target.value); if (state.point) placeFromCoords([state.point.x, state.point.y, state.point.z]); });
+  syncNumSeg();
+  const setFromInputs = () => {
+    const x = parseFloat($("px").value), y = parseFloat($("py").value), z = parseFloat($("pz").value);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) { showErr("Enter numbers for x₀ and y₀."); return; }
+    showErr("");
+    if (document.activeElement) document.activeElement.blur();
+    placeFromCoords([x, y, Number.isFinite(z) ? z : (state.point ? state.point.z : 0)]);
+  };
+  $("setPtBtn").addEventListener("click", setFromInputs);
+  for (const id of ["px", "py", "pz"]) $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); setFromInputs(); } });
+  $("clearPtBtn").addEventListener("click", () => { state.point = null; state.info = null; refreshPoint(); });
+
+  for (const b of $("viewbar").querySelectorAll("[data-view]")) b.addEventListener("click", () => setView(b.dataset.view));
+  $("lectureBtn").addEventListener("click", () => {
+    state.lecture = !state.lecture; $("app").classList.toggle("lecture", state.lecture);
+    $("lectureBtn").setAttribute("aria-pressed", String(state.lecture));
+  });
+  $("fsBtn").addEventListener("click", () => {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else { const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => {}); }
+    } catch (_) {}
+  });
+  $("hintX").addEventListener("click", () => { $("hint").hidden = true; });
+  $("collapseBtn").addEventListener("click", () => {
+    const c = $("eqcard").classList.toggle("collapsed");
+    $("collapseBtn").textContent = c ? "Show" : "Hide";
+    $("collapseBtn").setAttribute("aria-expanded", String(!c));
+  });
+  $("copyBtn").addEventListener("click", () => {
+    const text = latexForCopy || (S ? S.tex : "");
+    const done = () => { $("copyBtn").textContent = "Copied"; setTimeout(() => { $("copyBtn").textContent = "Copy LaTeX"; }, 1400); };
+    const fallback = () => {
+      const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.append(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (_) { $("copyBtn").textContent = "Copy failed"; }
+      ta.remove();
+    };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (_) { fallback(); }
+  });
+}
+function syncSwatches() { for (const b of $("swatches").children) b.setAttribute("aria-pressed", String(b.dataset.c.toLowerCase() === state.surfColor.toLowerCase())); }
+function syncNumSeg() {
+  for (const b of $("numSeg").querySelectorAll("button")) b.setAttribute("aria-pressed", String((b.dataset.num === "exact") === state.exact));
+  $("snapWrap").hidden = !state.exact;
+}
+
+/* ---------- Theme ---------- */
+function onTheme() {
+  readTokens();
+  buildAxes(); buildGridLines(); buildContours(); refreshPoint();
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", onTheme);
+new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------- Resize and loop ---------- */
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+function loop() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); }
+
+/* ---------- Boot ---------- */
+readTokens();
+initPanel();
+writeBox();
+$("expr").value = state.expr.explicit;
+setMode("explicit", true);
+resize();
+const first = PRESETS.explicit[0];
+applyPreset(first);
+window.__mjReady = () => queueCard();
+if (window.MathJax && MathJax.tex2svg) queueCard();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => buildAxes());
+loop();
+})();
+</script>
+
+</body>
+</html>
