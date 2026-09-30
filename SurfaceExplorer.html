@@ -283,7 +283,7 @@ input[type="color"] { width: 36px; height: 26px; border: 1px solid var(--rule); 
 <script>
 window.MathJax = {
   tex: { inlineMath: [["\\(", "\\)"]] },
-  svg: { fontCache: "global" },
+  svg: { fontCache: "local" },
   startup: { typeset: false, ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => window.__mjReady && window.__mjReady()); } }
 };
 </script>
