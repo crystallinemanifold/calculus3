@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-Constraint Lagrange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+/* Layout: 3D stage fills the left, a ruled worksheet-style control panel on the right; stacks on phones. */
+:root{
+  --bg:#f2f4f7; --panel:#ffffff; --ink:#18202c; --muted:#5a6476; --rule:#dde2ea; --scene:#fbfcfd; --soft:#eef1f5;
+  --f:#d4500f; --g:#1d5fd1; --h:#08876a; --t:#a42a9e; --np:#6b7487;
+  --font-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --font-ui:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131a; --panel:#161b24; --ink:#e5e8ee; --muted:#9aa3b3; --rule:#2a3140; --scene:#0c1016; --soft:#1e2430;
+    --f:#ff8a4c; --g:#6aa2ff; --h:#33cfa3; --t:#e277dd; --np:#8d96a8; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f131a; --panel:#161b24; --ink:#e5e8ee; --muted:#9aa3b3; --rule:#2a3140; --scene:#0c1016; --soft:#1e2430;
+  --f:#ff8a4c; --g:#6aa2ff; --h:#33cfa3; --t:#e277dd; --np:#8d96a8; color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-ui)}
+*{box-sizing:border-box}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;padding-block:16px;padding-inline:16px}
+.stage{position:relative;min-width:0;min-height:0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--scene)}
+#gl{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.vl{position:absolute;left:0;top:0;white-space:nowrap;font:italic 600 18px/1 var(--font-math);
+  text-shadow:0 0 3px var(--scene),0 0 3px var(--scene),0 0 6px var(--scene);will-change:transform}
+.vl.small{font-size:15px;font-weight:400}
+.vl.tag{font:500 12px/1.2 var(--font-mono);font-style:normal;color:var(--ink)}
+.vl.axis{font:italic 400 16px/1 var(--font-math);color:var(--muted)}
+.hint{position:absolute;left:12px;bottom:10px;font:12px/1.3 var(--font-ui);color:var(--muted);pointer-events:none}
+.scale-note{position:absolute;right:12px;bottom:10px;font:12px/1.3 var(--font-ui);color:var(--muted);pointer-events:none;text-align:right}
+
+.panel{min-width:0;overflow-y:auto;background:var(--panel);border:1px solid var(--rule);border-radius:6px;
+  padding-block:20px 24px;padding-inline:20px;display:flex;flex-direction:column;gap:22px}
+.eyebrow{margin:0 0 4px;font:600 11px/1.2 var(--font-ui);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:600 26px/1.15 var(--font-math);text-wrap:balance}
+.lede{margin:6px 0 0;color:var(--muted)}
+h2{margin:0 0 10px;font:600 11px/1.2 var(--font-ui);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:6px;border-bottom:1px solid var(--rule)}
+section{min-width:0}
+.m{font-family:var(--font-math);font-size:17px}
+.m i{font-style:italic}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:5px;overflow:hidden;margin-bottom:12px}
+.seg button{border:0;background:transparent;color:var(--muted);font:500 14px/1 var(--font-ui);padding:10px 8px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.defs{margin:0;display:grid;gap:4px}
+.defs div{display:grid;grid-template-columns:5.6em 1fr;align-items:baseline}
+.defs dt{margin:0;white-space:nowrap}
+.defs dd{margin:0;min-width:0}
+.defs .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.param{margin:10px 0 0;padding:8px 10px;background:var(--soft);border-radius:4px;font-size:16px;overflow-x:auto}
+
+.slider-row{display:grid;grid-template-columns:auto 1fr 5.2em;gap:10px;align-items:center}
+.slider-row label{font:italic 18px var(--font-math)}
+input[type=range]{width:100%;accent-color:var(--t);min-width:0}
+.slider-row output{text-align:right}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{font:500 13px/1 var(--font-ui);color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:8px 12px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn[aria-pressed="true"]{background:var(--soft)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+
+.readout{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin-top:14px;align-items:baseline}
+.readout dt{margin:0;white-space:nowrap}
+.readout dd{margin:0;min-width:0}
+.chip{display:inline-block;margin-top:4px;font:500 12px/1.3 var(--font-ui);padding:3px 8px;border-radius:3px;border:1px solid var(--t);color:var(--t)}
+.chip.zero{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.eqn{margin-top:12px;padding:10px 12px;border:1px solid var(--rule);border-radius:4px;font-size:18px;line-height:1.5;overflow-x:auto;white-space:nowrap}
+.eqn .cf{font-family:var(--font-mono);font-size:14px;font-style:normal}
+.eqn .tau{color:var(--t)}
+.eqn.critical .tau{opacity:.45}
+
+#chart{display:block;width:100%;height:150px}
+.cap{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.cap .m{font-size:15px}
+
+.toggles{display:grid;gap:7px}
+.toggles label{display:grid;grid-template-columns:auto 14px 1fr;gap:9px;align-items:center;cursor:pointer;font-size:14px}
+.toggles input{margin:0;accent-color:var(--ink)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px}
+.sw.faint{opacity:.45}
+.toggles .m{font-size:15px}
+
+.why p{margin:0 0 10px;max-width:65ch}
+.why p:last-child{margin-bottom:0}
+.why .m{font-size:16px}
+
+@media (max-width:860px){
+  html,body{height:auto}
+  .app{height:auto;grid-template-columns:1fr}
+  .stage{height:62svh;min-height:340px}
+  .panel{overflow:visible}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
+</style>
+
+<div class="app">
+  <div class="stage" id="stage">
+    <canvas id="gl" aria-label="3D view of level surfaces of f, the plane g, the cylinder h, and their intersection curve"></canvas>
+    <div id="labels"></div>
+    <div class="hint">Drag to rotate · scroll or pinch to zoom · right-drag to pan</div>
+    <div class="scale-note">Gradients drawn at 0.35× true length</div>
+  </div>
+
+  <aside class="panel">
+    <header>
+      <p class="eyebrow">MAT 238 · Lagrange multipliers</p>
+      <h1>Two-Constraint Lagrange</h1>
+      <p class="lede">Find the extreme values of <span class="m"><i>f</i></span> on the curve where a plane meets a cylinder.</p>
+    </header>
+
+    <section>
+      <h2>Problem</h2>
+      <div class="seg" role="group" aria-label="Choose the function f">
+        <button type="button" id="modeSphere" aria-pressed="true">Spheres</button>
+        <button type="button" id="modeHyper" aria-pressed="false">Hyperboloids</button>
+      </div>
+      <dl class="defs m">
+        <div><dt><span class="sw" style="background:var(--f)"></span><i>f</i> =</dt><dd id="fExpr"></dd></div>
+        <div><dt><span class="sw" style="background:var(--g)"></span><i>g</i> =</dt><dd><i>x</i> + <i>y</i> + 2<i>z</i> = 2</dd></div>
+        <div><dt><span class="sw" style="background:var(--h)"></span><i>h</i> =</dt><dd><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 1</dd></div>
+      </dl>
+      <p class="param m"><span style="color:var(--t)">●</span> <b>r</b>(<i>t</i>) = ⟨cos <i>t</i>, sin <i>t</i>, 1 − ½(cos <i>t</i> + sin <i>t</i>)⟩</p>
+    </section>
+
+    <section>
+      <h2>Point P on the curve</h2>
+      <div class="slider-row">
+        <label for="tSlider">t</label>
+        <input type="range" id="tSlider" min="0" max="360" step="0.5" value="120">
+        <output id="tOut" class="mono" for="tSlider">120°</output>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn" id="playBtn" aria-pressed="false">Play</button>
+        <button type="button" class="btn" id="minBtn">Go to min</button>
+        <button type="button" class="btn" id="maxBtn">Go to max</button>
+      </div>
+      <dl class="readout">
+        <dt class="m"><i>P</i></dt><dd class="mono" id="pOut"></dd>
+        <dt class="m"><i>f</i>(<i>P</i>)</dt><dd class="mono" id="fOut"></dd>
+        <dt>Level surface</dt><dd id="kindOut"></dd>
+        <dt class="m">∇<i>f</i> · <b>T̂</b></dt><dd><span class="mono" id="tauOut"></span><br><span class="chip" id="chip"></span></dd>
+      </dl>
+      <div class="eqn m" id="eqn"></div>
+    </section>
+
+    <section>
+      <h2><span style="text-transform:none" class="m"><i>f</i></span> along the curve</h2>
+      <canvas id="chart" aria-label="Graph of f along the intersection curve"></canvas>
+      <p class="cap">The slope here is <span class="m"><i>df</i>/<i>dt</i> = ∇<i>f</i> · <b>r</b>′(<i>t</i>)</span>. It is zero exactly where ∇<i>f</i> has no component along the curve.</p>
+    </section>
+
+    <section>
+      <h2>Show</h2>
+      <div class="toggles">
+        <label><input type="checkbox" id="shGrad" checked><span class="sw" style="background:var(--f)"></span><span>Gradient vectors <span class="m">∇<i>f</i>, ∇<i>g</i>, ∇<i>h</i>, <b>T̂</b></span></span></label>
+        <label><input type="checkbox" id="shDecomp" checked><span class="sw" style="background:var(--t)"></span><span>Split <span class="m">∇<i>f</i> = λ∇<i>g</i> + μ∇<i>h</i> + τ<b>T̂</b></span></span></label>
+        <label><input type="checkbox" id="shNormal" checked><span class="sw" style="background:var(--np)"></span><span>Normal plane at <span class="m"><i>P</i></span>, spanned by <span class="m">∇<i>g</i>, ∇<i>h</i></span></span></label>
+        <label><input type="checkbox" id="shLive" checked><span class="sw" style="background:var(--f)"></span><span>Level surface of <span class="m"><i>f</i></span> through <span class="m"><i>P</i></span></span></label>
+        <label><input type="checkbox" id="shExt" checked><span class="sw faint" style="background:var(--f)"></span><span>Level surfaces at the min and max</span></label>
+        <label><input type="checkbox" id="shPlane" checked><span class="sw" style="background:var(--g)"></span><span>Plane <span class="m"><i>g</i> = 2</span></span></label>
+        <label><input type="checkbox" id="shCyl" checked><span class="sw" style="background:var(--h)"></span><span>Cylinder <span class="m"><i>h</i> = 1</span></span></label>
+      </div>
+    </section>
+
+    <section class="why">
+      <h2>Why two multipliers</h2>
+      <p>The curve lies on both surfaces, so its tangent <span class="m"><b>T̂</b></span> is perpendicular to <span class="m">∇<i>g</i></span> and to <span class="m">∇<i>h</i></span>. Those two gradients span the whole plane of directions perpendicular to the curve: the gray disk.</p>
+      <p>Split <span class="m">∇<i>f</i></span> into a part in that disk and a part along <span class="m"><b>T̂</b></span>. The part along <span class="m"><b>T̂</b></span> measures how fast <span class="m"><i>f</i></span> changes as you move along the curve. At a constrained max or min it must vanish, so <span class="m">∇<i>f</i></span> lies in the disk: <span class="m">∇<i>f</i> = λ∇<i>g</i> + μ∇<i>h</i></span>.</p>
+      <p>Try this: slide <span class="m"><i>P</i></span> toward a marked extreme and watch the <span class="m">τ<b>T̂</b></span> arrow shrink to nothing as the level surface of <span class="m"><i>f</i></span> becomes tangent to the curve. With hyperboloids, the level surface through <span class="m"><i>P</i></span> passes from one sheet, through the cone at <span class="m"><i>t</i> = 3π/4</span>, to two sheets.</p>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+  const V = THREE.Vector3;
+  const TAU = Math.PI * 2, DEG = Math.PI / 180;
+  const ZMAX = 2.4;     // vertical clip for surfaces
+  const K = 0.35;       // gradient display scale (uniform, so vector sums stay exact)
+
+  // ---------- the math ----------
+  const MODES = {
+    sphere: {
+      f: p => p.x*p.x + p.y*p.y + p.z*p.z,
+      grad: p => new V(2*p.x, 2*p.y, 2*p.z),
+      html: '<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> + <i>z</i><sup>2</sup>'
+    },
+    hyper: {
+      f: p => p.x*p.x + p.y*p.y - p.z*p.z,
+      grad: p => new V(2*p.x, 2*p.y, -2*p.z),
+      html: '<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> − <i>z</i><sup>2</sup>'
+    }
+  };
+  const curvePt  = t => { const c = Math.cos(t), s = Math.sin(t); return new V(c, s, 1 - (c + s)/2); };
+  const curveVel = t => { const c = Math.cos(t), s = Math.sin(t); return new V(-s, c, (s - c)/2); };
+  const GRAD_G = new V(1, 1, 2);
+  const gradH = p => new V(2*p.x, 2*p.y, 0);
+
+  function extremes(mode){
+    const f = MODES[mode].f;
+    let mn = {v: Infinity, d: 0}, mx = {v: -Infinity, d: 0};
+    for (let i = 0; i < 3600; i++){
+      const d = i / 10, v = f(curvePt(d * DEG));
+      if (v < mn.v) mn = {v, d};
+      if (v > mx.v) mx = {v, d};
+    }
+    return {minDeg: mn.d, minVal: mn.v, maxDeg: mx.d, maxVal: mx.v};
+  }
+  function surfaceKind(mode, c){
+    if (mode === 'sphere') return 'sphere, radius ' + fmt(Math.sqrt(c));
+    if (Math.abs(c) < 1e-3) return 'cone';
+    return c > 0 ? 'hyperboloid of one sheet' : 'hyperboloid of two sheets';
+  }
+  function fmt(x, d = 3){
+    if (Math.abs(x) < 0.5 * Math.pow(10, -d)) x = 0;
+    const s = x.toFixed(d);
+    return s.startsWith('-') ? '−' + s.slice(1) : s;
+  }
+  function fmtSigned(x, d = 3){
+    if (Math.abs(x) < 0.5 * Math.pow(10, -d)) x = 0;
+    return (x < 0 ? '− ' : '+ ') + Math.abs(x).toFixed(d);
+  }
+
+  // ---------- state ----------
+  const state = { mode: 'sphere', deg: 120, playing: false, tween: null };
+  let ext = extremes(state.mode);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- theme ----------
+  function tok(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888888'; }
+  const matsBy = {f: [], g: [], h: [], t: [], np: [], ink: [], muted: []};
+  function reg(key, m){ matsBy[key].push(m); return m; }
+
+  // ---------- renderer / scene ----------
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('gl');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.up.set(0, 0, 1);
+  camera.position.set(6.0, 4.4, 3.4);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.target.set(0, 0, 0.35);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 2.5;
+  controls.maxDistance = 20;
+  controls.update();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  const d1 = new THREE.DirectionalLight(0xffffff, 0.55); d1.position.set(4, 3, 6); scene.add(d1);
+  const d2 = new THREE.DirectionalLight(0xffffff, 0.28); d2.position.set(-4, -3, 1); scene.add(d2);
+
+  function surfMat(key, opacity){
+    return reg(key, new THREE.MeshPhongMaterial({color: 0x888888, transparent: true, opacity,
+      side: THREE.DoubleSide, depthWrite: false, shininess: 30}));
+  }
+  function lineMat(key, opacity){
+    return reg(key, new THREE.LineBasicMaterial({color: 0x888888, transparent: opacity < 1, opacity}));
+  }
+
+  // axes
+  const axisLen = 2.6;
+  [[new V(-axisLen,0,0), new V(axisLen,0,0)], [new V(0,-axisLen,0), new V(0,axisLen,0)], [new V(0,0,-axisLen), new V(0,0,axisLen)]]
+    .forEach(([a, b]) => scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]), lineMat('muted', 0.55))));
+
+  // plane g: x + y + 2z = 2
+  const nG = GRAD_G.clone().normalize();
+  const planeGeo = new THREE.PlaneGeometry(4.6, 4.6);
+  const planeGroup = new THREE.Group();
+  planeGroup.add(new THREE.Mesh(planeGeo, surfMat('g', 0.17)));
+  planeGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(planeGeo), lineMat('g', 0.7)));
+  planeGroup.quaternion.setFromUnitVectors(new V(0,0,1), nG);
+  planeGroup.position.set(0, 0, 1);
+  scene.add(planeGroup);
+
+  // cylinder h: x^2 + y^2 = 1
+  const cylGroup = new THREE.Group();
+  const cylGeo = new THREE.CylinderGeometry(1, 1, 2*ZMAX, 96, 1, true);
+  cylGeo.rotateX(Math.PI / 2);
+  cylGroup.add(new THREE.Mesh(cylGeo, surfMat('h', 0.15)));
+  [-ZMAX, ZMAX].forEach(z => {
+    const pts = []; for (let i = 0; i <= 96; i++){ const a = i/96*TAU; pts.push(new V(Math.cos(a), Math.sin(a), z)); }
+    cylGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat('h', 0.6)));
+  });
+  scene.add(cylGroup);
+
+  // intersection curve
+  class IntersectionCurve extends THREE.Curve {
+    getPoint(u, target = new V()){ return target.copy(curvePt(u * TAU)); }
+  }
+  const curveMat = reg('t', new THREE.MeshPhongMaterial({color: 0x888888, shininess: 40}));
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(new IntersectionCurve(), 300, 0.024, 10, true), curveMat));
+
+  // surfaces of revolution about the z-axis
+  function revolve(profiles, seg = 72){
+    const pos = [], idx = [];
+    profiles.forEach(prof => {
+      const base = pos.length / 3, n = prof.length;
+      for (let i = 0; i < n; i++){
+        const [r, z] = prof[i];
+        for (let j = 0; j <= seg; j++){ const a = j/seg*TAU; pos.push(r*Math.cos(a), r*Math.sin(a), z); }
+      }
+      for (let i = 0; i < n - 1; i++) for (let j = 0; j < seg; j++){
+        const a = base + i*(seg+1) + j, b = a + seg + 1;
+        idx.push(a, b, a+1, b, b+1, a+1);
+      }
+    });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    return g;
+  }
+  function levelProfiles(mode, c){
+    const N = 90, out = [];
+    if (mode === 'sphere'){
+      if (c <= 0) return out;
+      const R = Math.sqrt(c), p = [];
+      for (let i = 0; i <= N; i++){ const ph = i/N*Math.PI; p.push([R*Math.sin(ph), R*Math.cos(ph)]); }
+      out.push(p); return out;
+    }
+    if (c > 1e-3){
+      const a = Math.sqrt(c), S = Math.asinh(ZMAX/a), p = [];
+      for (let i = 0; i <= N; i++){ const s = -S + 2*S*i/N; p.push([a*Math.cosh(s), a*Math.sinh(s)]); }
+      out.push(p);
+    } else if (c < -1e-3){
+      const a = Math.sqrt(-c);
+      if (a >= ZMAX) return out;
+      const S = Math.acosh(ZMAX/a), up = [], dn = [];
+      for (let i = 0; i <= N; i++){ const s = S*i/N; up.push([a*Math.sinh(s), a*Math.cosh(s)]); dn.push([a*Math.sinh(s), -a*Math.cosh(s)]); }
+      out.push(up, dn);
+    } else {
+      const up = [], dn = [];
+      for (let i = 0; i <= N; i++){ const z = ZMAX*i/N; up.push([z, z]); dn.push([z, -z]); }
+      out.push(up, dn);
+    }
+    return out;
+  }
+
+  const extMat = surfMat('f', 0.10);
+  const liveMat = surfMat('f', 0.30);
+  const extMin = new THREE.Mesh(new THREE.BufferGeometry(), extMat);
+  const extMax = new THREE.Mesh(new THREE.BufferGeometry(), extMat);
+  const live = new THREE.Mesh(new THREE.BufferGeometry(), liveMat);
+  extMin.renderOrder = extMax.renderOrder = 2; live.renderOrder = 3;
+  scene.add(extMin, extMax, live);
+  let liveC = null;
+  function setLevel(mesh, c){ mesh.geometry.dispose(); mesh.geometry = revolve(levelProfiles(state.mode, c)); }
+
+  // normal plane disk at P
+  const diskGeo = new THREE.CircleGeometry(0.85, 64);
+  const normalGroup = new THREE.Group();
+  const diskMesh = new THREE.Mesh(diskGeo, surfMat('np', 0.16));
+  diskMesh.renderOrder = 4;
+  normalGroup.add(diskMesh);
+  normalGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(diskGeo), lineMat('np', 0.8)));
+  scene.add(normalGroup);
+
+  // point markers
+  const dotGeo = new THREE.SphereGeometry(0.055, 20, 14);
+  const pDot = new THREE.Mesh(dotGeo, reg('ink', new THREE.MeshPhongMaterial({color: 0x888888})));
+  const minDot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), reg('f', new THREE.MeshPhongMaterial({color: 0x888888})));
+  const maxDot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), minDot.material);
+  scene.add(pDot, minDot, maxDot);
+
+  // arrows (thick, so they read on a projector)
+  function makeArrow(key, radius, opacity = 1){
+    const mat = reg(key, new THREE.MeshPhongMaterial({color: 0x888888, shininess: 50, transparent: opacity < 1, opacity}));
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 1, 14), mat);
+    const head = new THREE.Mesh(new THREE.ConeGeometry(radius*2.7, 1, 18), mat);
+    const g = new THREE.Group(); g.add(shaft, head);
+    g.userData = {shaft, head, radius, len: 0, tip: new V(), mid: new V(), on: true};
+    scene.add(g);
+    return g;
+  }
+  const UP = new V(0, 1, 0);
+  function setArrow(a, origin, vec){
+    const u = a.userData, len = vec.length();
+    u.len = len;
+    u.tip.copy(origin).add(vec);
+    u.mid.copy(origin).addScaledVector(vec, 0.5);
+    if (len < 0.02){ a.visible = false; return; }
+    a.visible = u.on;
+    const headLen = Math.min(0.17, len * 0.4), shaftLen = len - headLen;
+    u.shaft.scale.set(1, shaftLen, 1); u.shaft.position.set(0, shaftLen/2, 0);
+    u.head.scale.set(1, headLen, 1);  u.head.position.set(0, shaftLen + headLen/2, 0);
+    a.position.copy(origin);
+    a.quaternion.setFromUnitVectors(UP, vec.clone().normalize());
+  }
+  const arF = makeArrow('f', 0.022), arG = makeArrow('g', 0.022), arH = makeArrow('h', 0.022), arT = makeArrow('t', 0.022);
+  const cpG = makeArrow('g', 0.011, 0.75), cpH = makeArrow('h', 0.011, 0.75), cpT = makeArrow('t', 0.013, 0.9);
+
+  // ---------- HTML labels ----------
+  const labelLayer = document.getElementById('labels');
+  const labels = [];
+  function addLabel(html, cls, colorVar, getPos, isOn){
+    const el = document.createElement('div');
+    el.className = 'vl ' + (cls || '');
+    el.innerHTML = html;
+    if (colorVar) el.style.color = 'var(' + colorVar + ')';
+    labelLayer.appendChild(el);
+    const L = {el, getPos, isOn: isOn || (() => true)};
+    labels.push(L); return L;
+  }
+  const offsetTip = (a, extra = 0.13) => {
+    const u = a.userData, dir = u.tip.clone().sub(a.position);
+    if (dir.lengthSq() > 0) dir.normalize();
+    return u.tip.clone().addScaledVector(dir, extra);
+  };
+  addLabel('∇<i>f</i>', '', '--f', () => offsetTip(arF), () => arF.visible);
+  addLabel('∇<i>g</i>', '', '--g', () => offsetTip(arG), () => arG.visible);
+  addLabel('∇<i>h</i>', '', '--h', () => offsetTip(arH), () => arH.visible);
+  addLabel('<b style="font-style:normal">T̂</b>', '', '--t', () => offsetTip(arT), () => arT.visible);
+  addLabel('λ∇<i>g</i>', 'small', '--g', () => cpG.userData.mid.clone().add(new V(0, 0, 0.09)), () => cpG.visible);
+  addLabel('μ∇<i>h</i>', 'small', '--h', () => cpH.userData.mid.clone().add(new V(0, 0, -0.09)), () => cpH.visible);
+  addLabel('τ<b style="font-style:normal">T̂</b>', 'small', '--t', () => cpT.userData.mid, () => cpT.visible && cpT.userData.len > 0.12);
+  addLabel('<i>P</i>', '', '--ink', () => pDot.position.clone().add(new V(0, 0, -0.17)));
+  const minLabel = addLabel('', 'tag', null, () => minDot.position.clone().add(new V(0, 0, -0.2)), () => !nearDeg(ext.minDeg));
+  const maxLabel = addLabel('', 'tag', null, () => maxDot.position.clone().add(new V(0, 0, 0.2)), () => !nearDeg(ext.maxDeg));
+  addLabel('<i>x</i>', 'axis', null, () => new V(axisLen + 0.15, 0, 0));
+  addLabel('<i>y</i>', 'axis', null, () => new V(0, axisLen + 0.15, 0));
+  addLabel('<i>z</i>', 'axis', null, () => new V(0, 0, axisLen + 0.15));
+  function nearDeg(d){ let x = Math.abs(state.deg - d) % 360; x = Math.min(x, 360 - x); return x < 4; }
+
+  const proj = new V();
+  function placeLabels(){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    labels.forEach(L => {
+      if (!L.isOn()){ L.el.hidden = true; return; }
+      proj.copy(L.getPos()).project(camera);
+      if (proj.z > 1 || proj.z < -1){ L.el.hidden = true; return; }
+      L.el.hidden = false;
+      const x = (proj.x + 1) / 2 * w, y = (1 - proj.y) / 2 * h;
+      L.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-50%)';
+    });
+  }
+
+  // ---------- panel elements ----------
+  const $ = id => document.getElementById(id);
+  const slider = $('tSlider'), tOut = $('tOut'), pOut = $('pOut'), fOut = $('fOut'), kindOut = $('kindOut');
+  const tauOut = $('tauOut'), chip = $('chip'), eqn = $('eqn'), fExpr = $('fExpr');
+  const playBtn = $('playBtn'), minBtn = $('minBtn'), maxBtn = $('maxBtn');
+  const chart = $('chart');
+  const show = {
+    grad: $('shGrad'), decomp: $('shDecomp'), normal: $('shNormal'), live: $('shLive'),
+    ext: $('shExt'), plane: $('shPlane'), cyl: $('shCyl')
+  };
+  let last = null;
+
+  function update(){
+    const M = MODES[state.mode];
+    const t = state.deg * DEG;
+    const P = curvePt(t);
+    const fv = M.f(P);
+    const gf = M.grad(P), gg = GRAD_G.clone(), gh = gradH(P);
+    const T = curveVel(t), Th = T.clone().normalize();
+    const dfdt = gf.dot(T), tau = gf.dot(Th);
+    const N = gf.clone().addScaledVector(Th, -tau);
+    const a = gg.dot(gg), b = gg.dot(gh), c = gh.dot(gh), r1 = gg.dot(N), r2 = gh.dot(N);
+    const det = a*c - b*b;
+    const lam = (r1*c - b*r2) / det, mu = (a*r2 - b*r1) / det;
+    last = {deg: state.deg, fv, dfdt, tau, lam, mu};
+
+    pDot.position.copy(P);
+
+    // vectors
+    arF.userData.on = arG.userData.on = arH.userData.on = arT.userData.on = show.grad.checked;
+    setArrow(arF, P, gf.clone().multiplyScalar(K));
+    setArrow(arG, P, gg.clone().multiplyScalar(K));
+    setArrow(arH, P, gh.clone().multiplyScalar(K));
+    setArrow(arT, P, Th.clone().multiplyScalar(0.8));
+
+    const on = show.decomp.checked;
+    cpG.userData.on = cpH.userData.on = cpT.userData.on = on;
+    const vG = gg.clone().multiplyScalar(K*lam), vH = gh.clone().multiplyScalar(K*mu), vT = Th.clone().multiplyScalar(K*tau);
+    const o2 = P.clone().add(vG), o3 = o2.clone().add(vH);
+    setArrow(cpG, P, vG); setArrow(cpH, o2, vH); setArrow(cpT, o3, vT);
+
+    // normal plane
+    normalGroup.visible = show.normal.checked;
+    normalGroup.position.copy(P);
+    normalGroup.quaternion.setFromUnitVectors(new V(0, 0, 1), Th);
+
+    // level surface through P
+    live.visible = show.live.checked;
+    if (liveC === null || Math.abs(liveC - fv) > 1e-9){ setLevel(live, fv); liveC = fv; }
+
+    // readouts
+    tOut.textContent = (Number.isInteger(state.deg) ? state.deg : state.deg.toFixed(1)) + '°';
+    slider.value = state.deg;
+    pOut.textContent = '(' + fmt(P.x) + ', ' + fmt(P.y) + ', ' + fmt(P.z) + ')';
+    fOut.textContent = fmt(fv);
+    kindOut.textContent = surfaceKind(state.mode, fv);
+    tauOut.textContent = fmt(tau);
+    const critical = Math.abs(tau) < 5e-4;
+    let tag = '';
+    if (critical){
+      tag = nearDeg(ext.minDeg) ? 'constrained min' : nearDeg(ext.maxDeg) ? 'constrained max' : 'critical point';
+      chip.textContent = tag + ': ∇f lies in the normal plane';
+    } else {
+      chip.textContent = 'f is ' + (dfdt > 0 ? 'increasing' : 'decreasing') + ' along the curve';
+    }
+    chip.classList.toggle('zero', critical);
+    eqn.classList.toggle('critical', critical);
+    eqn.innerHTML = '∇<i>f</i> = <span class="cf">' + fmt(lam) + '</span> ∇<i>g</i> <span class="cf">' + fmtSigned(mu) +
+      '</span> ∇<i>h</i> <span class="tau"><span class="cf">' + fmtSigned(tau) + '</span> <b>T̂</b></span>' +
+      '<br><span style="font-size:15px;color:var(--muted)">λ = ' + fmt(lam) + ', μ = ' + fmt(mu) + ', τ = ' + fmt(tau) + '</span>';
+
+    drawChart();
+  }
+
+  function applyMode(){
+    ext = extremes(state.mode);
+    fExpr.innerHTML = MODES[state.mode].html;
+    $('modeSphere').setAttribute('aria-pressed', state.mode === 'sphere');
+    $('modeHyper').setAttribute('aria-pressed', state.mode === 'hyper');
+    setLevel(extMin, ext.minVal); setLevel(extMax, ext.maxVal);
+    minDot.position.copy(curvePt(ext.minDeg * DEG));
+    maxDot.position.copy(curvePt(ext.maxDeg * DEG));
+    minLabel.el.textContent = 'min f = ' + fmt(ext.minVal);
+    maxLabel.el.textContent = 'max f = ' + fmt(ext.maxVal);
+    liveC = null;
+    applyVisibility();
+    update();
+  }
+  function applyVisibility(){
+    extMin.visible = extMax.visible = show.ext.checked;
+    planeGroup.visible = show.plane.checked;
+    cylGroup.visible = show.cyl.checked;
+  }
+
+  // ---------- chart: f(r(t)) ----------
+  function drawChart(){
+    const w = chart.clientWidth, h = chart.clientHeight;
+    if (!w || !h) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (chart.width !== Math.round(w*dpr) || chart.height !== Math.round(h*dpr)){ chart.width = Math.round(w*dpr); chart.height = Math.round(h*dpr); }
+    const ctx = chart.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const ink = tok('--ink'), muted = tok('--muted'), rule = tok('--rule'), fc = tok('--f'), tc = tok('--t');
+    const pad = {l: 50, r: 10, t: 12, b: 24};
+    const span = ext.maxVal - ext.minVal;
+    const y0 = ext.minVal - span*0.15, y1 = ext.maxVal + span*0.15;
+    const X = d => pad.l + d/360 * (w - pad.l - pad.r);
+    const Y = v => pad.t + (1 - (v - y0)/(y1 - y0)) * (h - pad.t - pad.b);
+    ctx.font = '11px ' + getComputedStyle(document.body).getPropertyValue('--font-mono');
+    ctx.lineWidth = 1;
+    // grid
+    ctx.strokeStyle = rule; ctx.fillStyle = muted; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ['0', 'π/2', 'π', '3π/2', '2π'].forEach((lab, i) => {
+      const x = X(i*90);
+      ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, h - pad.b); ctx.stroke();
+      ctx.fillText(lab, x, h - pad.b + 6);
+    });
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    [ext.minVal, ext.maxVal].forEach(v => {
+      const y = Y(v);
+      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillText(fmt(v, 2), pad.l - 6, y);
+    });
+    // curve
+    const f = MODES[state.mode].f;
+    ctx.strokeStyle = fc; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i <= 360; i++){ const v = f(curvePt(i*DEG)); i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)); }
+    ctx.stroke();
+    // extremes
+    ctx.fillStyle = fc;
+    [[ext.minDeg, ext.minVal], [ext.maxDeg, ext.maxVal]].forEach(([d, v]) => { ctx.beginPath(); ctx.arc(X(d), Y(v), 3.5, 0, TAU); ctx.fill(); });
+    // tangent line at current t: slope df/dt (per radian) -> per degree
+    if (last){
+      const d = last.deg, v = last.fv, sl = last.dfdt * DEG, half = 28;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(pad.l, pad.t, w - pad.l - pad.r, h - pad.t - pad.b); ctx.clip();
+      ctx.strokeStyle = tc; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(X(d - half), Y(v - sl*half)); ctx.lineTo(X(d + half), Y(v + sl*half)); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = ink; ctx.strokeStyle = tok('--panel'); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(X(d), Y(v), 5, 0, TAU); ctx.fill(); ctx.stroke();
+    }
+  }
+
+  // ---------- theme application ----------
+  function applyTheme(){
+    renderer.setClearColor(new THREE.Color(tok('--scene')), 1);
+    Object.keys(matsBy).forEach(k => {
+      const c = new THREE.Color(tok('--' + k));
+      matsBy[k].forEach(m => m.color.copy(c));
+    });
+    drawChart();
+  }
+  try {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener ? mq.addEventListener('change', applyTheme) : mq.addListener(applyTheme);
+  } catch (e) {}
+  new MutationObserver(applyTheme).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme', 'class', 'style']});
+
+  // ---------- sizing ----------
+  function resize(){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    const aspect = w / h;
+    camera.aspect = aspect;
+    camera.fov = aspect < 1 ? Math.min(75, 2 * Math.atan(Math.tan(19*DEG) / aspect) / DEG) : 38;
+    camera.updateProjectionMatrix();
+    drawChart();
+  }
+  new ResizeObserver(resize).observe(stage);
+  new ResizeObserver(drawChart).observe(chart);
+
+  // ---------- interaction ----------
+  function setDeg(d){ state.deg = ((d % 360) + 360) % 360; update(); }
+  function stopPlay(){ state.playing = false; playBtn.textContent = 'Play'; playBtn.setAttribute('aria-pressed', 'false'); }
+  slider.addEventListener('input', () => { stopPlay(); state.tween = null; setDeg(parseFloat(slider.value)); });
+  playBtn.addEventListener('click', () => {
+    state.tween = null;
+    state.playing = !state.playing;
+    playBtn.textContent = state.playing ? 'Pause' : 'Play';
+    playBtn.setAttribute('aria-pressed', String(state.playing));
+  });
+  function goTo(target){
+    stopPlay();
+    if (reduceMotion){ setDeg(target); return; }
+    let delta = ((target - state.deg + 540) % 360) - 180;
+    state.tween = {from: state.deg, delta, start: performance.now(), dur: 500 + Math.abs(delta) * 4};
+  }
+  minBtn.addEventListener('click', () => goTo(ext.minDeg));
+  maxBtn.addEventListener('click', () => goTo(ext.maxDeg));
+  $('modeSphere').addEventListener('click', () => { state.mode = 'sphere'; applyMode(); });
+  $('modeHyper').addEventListener('click', () => { state.mode = 'hyper'; applyMode(); });
+  Object.values(show).forEach(cb => cb.addEventListener('change', () => { applyVisibility(); update(); }));
+
+  // ---------- loop ----------
+  function frame(now){
+    if (state.playing){
+      setDeg(Math.round((state.deg + 0.5) * 2) / 2);
+    } else if (state.tween){
+      const tw = state.tween, u = Math.min(1, (now - tw.start) / tw.dur);
+      const e = u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2) / 2;
+      let d = tw.from + tw.delta * e;
+      if (u >= 1){ d = tw.from + tw.delta; state.tween = null; d = Math.round(d * 10) / 10; }
+      setDeg(d);
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    placeLabels();
+    requestAnimationFrame(frame);
+  }
+
+  applyTheme();
+  resize();
+  applyMode();
+  requestAnimationFrame(frame);
+})();
+</script>
