@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MAT238 Calculus III Final Exam: Vector Calculus, with collapsible worked solutions.">
+  <meta name="color-scheme" content="light">
+  <title>Final Exam Study Guide · MAT238 Calculus III</title>
+  <style>
+    :root{--ink:#142e3c;--muted:#556a74;--paper:#f7f5ef;--white:#fff;--line:#d9e1dd;--green:#256658;--pale:#eaf2ed;--orange:#b04e28;--serif:Georgia,'Times New Roman',serif;--sans:system-ui,-apple-system,'Segoe UI',sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.7 var(--sans)}a{color:var(--green);text-underline-offset:4px}button,a,summary{touch-action:manipulation}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:5px;border-radius:3px}button{font:inherit;cursor:pointer}button:disabled{cursor:wait;opacity:.6}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:fixed;top:-80px;left:16px;z-index:10;background:white;padding:12px}.skip-link:focus{top:12px}
+    .masthead{background:var(--ink);color:#f9faf5;position:relative;overflow:hidden}.hero{max-width:1250px;margin:auto;padding:64px 52px 54px;position:relative}.eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:.76rem;font-weight:700;color:#bcd5c8;margin:0 0 22px}.hero h1{font:normal clamp(3rem,6.8vw,5.9rem)/1.04 var(--serif);letter-spacing:-.04em;margin:0 0 22px}.hero h1 span{color:#dce8cd}.hero-description{max-width:620px;color:#d0dce0;font-size:1.08rem;margin:0 0 32px}.hero-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:.84rem}.hero-meta span{padding-top:12px;border-top:1px solid #52717a}.hero-meta strong{color:#fff}.hero-art{position:absolute;right:60px;top:38px;opacity:.4;width:260px;height:260px;pointer-events:none}.hero-art svg{width:100%;height:100%}
+    .shell{max-width:1250px;margin:auto;padding:44px 52px 70px;display:grid;grid-template-columns:238px minmax(0,1fr);gap:52px}.sidebar{min-width:0}.sidebar-inner{position:sticky;top:24px}.nav-title{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}.nav-chapter{font-weight:700;font-size:.86rem;margin:24px 0 6px}.sidebar nav>a{display:block;text-decoration:none;font-size:.81rem;padding:9px 0;border-bottom:1px solid var(--line);line-height:1.5}.sidebar nav>a span{display:block;color:var(--muted);font-size:.72rem}.sidebar nav>a:hover{color:var(--orange)}.sidebar-note{font-size:.78rem;color:var(--muted);margin-top:26px}.sidebar .back{font-size:.8rem}
+    main{min-width:0}.welcome{background:var(--white);border:1px solid var(--line);border-left:4px solid var(--green);padding:24px 28px;margin-bottom:30px}.welcome h2{font:normal 1.5rem/1.2 var(--serif);margin:0 0 10px}.welcome p{margin:0;color:var(--muted);font-size:.9rem}.controls{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 0}.controls[hidden]{display:none}.controls button{padding:9px 13px;border:1px solid #b9cac3;background:white;color:var(--green);border-radius:5px;font-size:.78rem;font-weight:600}.controls button:hover{background:var(--pale)}.math-status{font-size:.72rem!important;margin-top:12px!important}.chapter{margin-top:58px}.chapter-header{border-top:2px solid var(--ink);padding-top:24px;margin-bottom:30px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}.chapter-kicker{font-size:.69rem;text-transform:uppercase;letter-spacing:.14em;color:var(--orange);font-weight:700;margin:0 0 5px}.chapter-header h2{font:normal clamp(1.9rem,4vw,2.65rem)/1.15 var(--serif);letter-spacing:-.03em;margin:0}.range{font-size:.78rem;color:var(--muted);white-space:nowrap}.topic{margin:0 0 44px;scroll-margin-top:24px}.topic-heading{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin:0 0 18px}.topic-heading h3{font-size:1.02rem;font-weight:700;margin:0}.topic-heading>span{color:var(--muted);font-size:.74rem}.given{padding:15px 20px;background:var(--pale);border-radius:5px;font-size:.89rem;line-height:1.7;margin:0 0 18px}.given p{margin:6px 0}.given strong{font-size:.84rem}.problems{list-style:none;padding:0;margin:0}.problem{padding:24px 26px 20px;background:var(--white);border:1px solid var(--line);border-radius:7px;margin:0 0 14px;min-width:0;scroll-margin-top:24px}.problem:target{outline:2px solid var(--green);outline-offset:3px}.problem-top{display:flex;gap:12px;align-items:center;margin-bottom:13px}.problem-link{background:var(--pale);color:var(--green);min-width:34px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font:700 .82rem var(--sans);text-decoration:none}.problem-top>span{color:var(--muted);font-size:.67rem;letter-spacing:.04em}.question{font-size:.95rem}.question ol{padding-left:26px;margin:10px 0}.question ol>li{padding-left:5px;margin:7px 0}.question ul{list-style:none;padding-left:0}.question ul>li{margin:7px 0}.question>p:first-child{margin-top:0}.solution{border-top:1px solid var(--line);margin-top:20px;padding-top:12px}.solution>summary{color:var(--green);font-size:.81rem;font-weight:700;cursor:pointer;padding:4px 0;list-style-position:inside}.solution[open]>summary{margin-bottom:16px}.sol-body{color:#29404b;font-size:.89rem;line-height:1.8}.sol-body p{margin:12px 0}.source-note{background:#faf4e9;border-left:3px solid #c18c47;padding:12px 16px;font-size:.77rem!important;color:#635339}.muted{color:var(--muted);font-size:.8rem}figure{text-align:center;margin:24px 0 16px}figure img{display:block;width:auto;max-width:100%;max-height:430px;height:auto;margin:auto;border-radius:3px}figcaption{color:var(--muted);font-size:.74rem;margin-top:12px}mjx-container[jax="SVG"][display="true"]{display:block!important;overflow-x:auto;overflow-y:hidden;max-width:100%;padding:6px 0;margin:1.15em 0!important}mjx-container svg{max-width:none}mjx-container:not([display="true"]){font-size:100%!important}.supplemental-intro{font-size:.9rem;color:var(--muted);margin-bottom:24px}.source-summary{border:1px solid var(--line);padding:20px 24px;border-radius:7px;font-size:.81rem;margin-top:45px;background:#f0f2ed}.source-summary summary{font-weight:700;color:var(--green);cursor:pointer}.source-summary p{margin:13px 0 0}.footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;padding-top:24px;margin-top:48px;font-size:.74rem;color:var(--muted)}
+    @media(min-width:1000px){.hero-description,.hero h1{max-width:760px}.hero-art{right:25px;top:72px}}
+    @media(max-width:1000px){.hero-art{display:none}.shell{gap:30px;grid-template-columns:190px minmax(0,1fr);padding:32px}.hero{padding:50px 32px}}
+    @media(max-width:760px){body{font-size:16px}.shell{display:block;padding:24px 18px 42px}.sidebar-inner{position:static}.sidebar{margin-bottom:30px}.sidebar nav{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.sidebar-note{margin-top:12px}.hero{padding:36px 22px}.hero-meta{gap:18px}.hero-description{font-size:.96rem}.eyebrow{font-size:.67rem;margin-bottom:18px}.welcome{padding:20px}.problem{padding:20px 18px 17px}.chapter{margin-top:40px}.chapter-header{display:block}.range{display:block;margin-top:10px}.question{overflow-wrap:break-word}.footer{display:block}.footer a{display:inline-block;margin-top:10px}.given{padding:13px 16px}}
+    .question,.sol-body,.given{max-width:100%;overflow-x:auto}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    @media print{@page{margin:.6in}body{font-size:10pt;background:white;color:black}.masthead{background:white;color:black}.hero{padding:0 0 20px}.hero h1{font-size:30pt}.hero h1 span,.hero-description,.eyebrow{color:black}.hero-art,.sidebar,.controls,.skip-link,.math-status,.source-summary,.footer{display:none!important}.hero-description{margin-bottom:12px}.hero-meta{font-size:9pt}.hero-meta span{padding-top:4px;border-color:#ccc}.hero-meta strong{color:black}.shell{display:block;padding:0}.welcome{border:1px solid #ccc;padding:12px;margin-bottom:22px}.welcome h2{font-size:15pt}.welcome p{font-size:9pt}.chapter{margin-top:24px}.chapter-header{margin:14px 0;padding-top:12px;break-after:avoid}.chapter-header h2{font-size:23pt}.topic-heading{break-after:avoid}.topic{margin-bottom:22px}.problem{border:0;border-bottom:1px solid #ccc;padding:12px 0;border-radius:0;margin:0;break-inside:auto}.question,.sol-body{font-size:10pt}.problem-top{break-after:avoid}.problem-link{background:white;color:black;height:auto}.solution{border:0;margin-top:10px;padding:0}.solution>summary{font-size:9pt;color:black}.solution>summary::marker{content:''}.given{background:white;border:1px solid #ccc;font-size:9pt}.source-note{background:white;border:1px solid #ccc;font-size:8pt!important}figure{break-inside:avoid}figure img{max-height:3in}mjx-container{break-inside:avoid}body.print-questions .solution{display:none!important}a{color:black;text-decoration:none}.chapter-header,.topic-heading{break-inside:avoid}}
+  </style>
+  <script>
+    window.MathJax={
+      tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],tags:'none',macros:{abs:['\\left|#1\\right|',1],norm:['\\left\\|#1\\right\\|',1],RR:'\\mathbb{R}',lvec:'\\langle',rvec:'\\rangle',ds:'\\displaystyle',vecF:'\\mathbf{F}',vecG:'\\mathbf{G}',vecE:'\\mathbf{E}',vecr:'\\mathbf{r}',veci:'\\mathbf{i}',vecj:'\\mathbf{j}',veck:'\\mathbf{k}',curl:'\\operatorname{curl}',dvg:'\\operatorname{div}'}},
+      svg:{fontCache:'local'},
+      startup:{pageReady:async function(){
+        try{await MathJax.startup.defaultPageReady();document.getElementById('math-status').textContent='Mathematics ready.';}
+        catch(e){document.getElementById('math-status').textContent='Math rendering could not finish. Reload the page with an internet connection.';console.error(e);}
+        finally{document.querySelectorAll('[data-print]').forEach(b=>b.disabled=false);}
+      }}
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js" onerror="document.getElementById('math-status').textContent='MathJax could not load. Connect to the internet and reload to render mathematics.';document.querySelectorAll('[data-print]').forEach(b=>b.disabled=false)"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to study guide</a>
+  <header class="masthead">
+    <div class="hero">
+      <p class="eyebrow">MAT238 · Calculus III · Exam Review</p>
+      <h1>Final Exam<br><span>Study Guide</span></h1>
+      <p class="hero-description">Connect vector fields, curves, and surfaces through circulation and flux. This guide uses the Chapter 6 material from the former fourth exam.</p>
+      <div class="hero-meta"><span><strong>06</strong> Chapter</span><span><strong>62</strong> Practice problems</span><span>Worked solutions</span></div>
+      <div class="hero-art" aria-hidden="true"><svg viewBox="0 0 260 260" fill="none"><g stroke="#a8cdbb" stroke-width="1"><path d="M35 215 210 215M55 240 55 30M55 215 170 90"/><ellipse cx="140" cy="200" rx="73" ry="24"/><path d="M70 199C60 155 226 169 207 137S52 128 70 99 222 80 205 59" stroke-width="2.5"/><path d="m55 30-5 10m5-10 5 10m150 175-10-5m10 5-10 5m-40-125-2 11m2-11-10 4"/></g><circle cx="70" cy="199" r="4" fill="#d6ad77"/><circle cx="205" cy="59" r="4" fill="#d6ad77"/></svg></div>
+    </div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Study guide navigation"><div class="sidebar-inner">
+      <p class="nav-title">Explore the guide</p>
+      <a class="back" href="index.html">← All study guides</a><nav aria-label="Topics"><a href="#fields">Vector fields, divergence & curl <span>1–8</span></a><a href="#potentials">Conservative fields & potentials <span>9–12</span></a><a href="#scalar-lines">Scalar line integrals <span>13–18</span></a><a href="#vector-lines">Vector line integrals & work <span>19–26</span></a><a href="#surface-integrals">Scalar surface integrals <span>27–31</span></a><a href="#flux">Flux through surfaces <span>32–38</span></a><a href="#green">Green’s Theorem <span>39–44</span></a><a href="#area">Area from line integrals <span>45–49</span></a><a href="#identities">Identities & planar flux <span>50–54</span></a><a href="#stokes">Stokes’ Theorem <span>55–57</span></a><a href="#divergence">Divergence Theorem <span>58–62</span></a></nav>
+      <p class="sidebar-note">Try each problem before revealing its solution. Source exercise numbers are retained, including entries marked omitted.</p>
+      <a class="back" href="#top">Back to top ↑</a>
+    </div></aside>
+    <main id="main">
+      <section class="welcome" aria-labelledby="use-title"><h2 id="use-title">Practice first. Check your work.</h2><p>Write out your reasoning, sketch where requested, and compare your work with the collapsible solutions. Source exercise numbers are retained. Entries explicitly marked omitted are labeled.</p>
+        <div class="controls" id="controls" hidden><button type="button" id="show-all">Open all solutions</button><button type="button" id="hide-all">Close all solutions</button><button type="button" data-print="questions" disabled>Print questions</button><button type="button" data-print="solutions" disabled>Print with solutions</button></div>
+        <p class="math-status" id="math-status" role="status">Loading mathematics…</p><noscript><p>Enable JavaScript to render mathematics with MathJax. Individual solution disclosures remain usable.</p></noscript>
+      </section>
+      <section class="chapter" aria-labelledby="chapter-title"><header class="chapter-header"><div><p class="chapter-kicker">Chapter 6</p><h2 id="chapter-title">Vector Calculus</h2></div><span class="range">Exercises 1–62</span></header><section class="topic" id="fields" aria-labelledby="fields-title"><div class="topic-heading"><h3 id="fields-title">Vector fields, divergence & curl</h3><span>1–8</span></div><ol class="problems" start="1"><li class="problem" id="problem-1" value="1"><div class="problem-top"><a class="problem-link" href="#problem-1" aria-label="Link to exercise 1">01</a><span>Chapter 6 · Exercise 1</span></div><div class="question">
+  Sketch the vector field \(\mathbf{F}(x,y)= \langle y,1 \rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 1</span></summary>
+<div class="sol-body">
+      Notice that the vector field is constant along horizontal lines.
+      <br/><img alt="Diagram for exercise 1: E4SG 1" decoding="async" loading="lazy" src="images/E4SG_1.png"/>
+</div>
+</details></li><li class="problem" id="problem-2" value="2"><div class="problem-top"><a class="problem-link" href="#problem-2" aria-label="Link to exercise 2">02</a><span>Chapter 6 · Exercise 2</span></div><div class="question">
+  Sketch the vector field \(\nabla f\), where \(f(x,y)=x^2-y\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 2</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> The gradient of \(f(x,y)=x^2-y\) is
+      \[
+        \mathbf{F}(x,y) = \left\langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right\rangle = \langle 2x, -1 \rangle.
+      \]
+      <img alt="Diagram for exercise 2: E4SG 2" decoding="async" loading="lazy" src="images/E4SG_2.png"/>
+</div>
+</details></li><li class="problem" id="problem-3" value="3"><div class="problem-top"><a class="problem-link" href="#problem-3" aria-label="Link to exercise 3">03</a><span>Chapter 6 · Exercise 3</span></div><div class="question">
+  Compute the divergence and the curl of the vector field
+  \(\mathbf{F} = \langle x^3y,\, xz^2,\, y^2z \rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 3</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> The divergence is
+      \[
+        \operatorname{div}(\mathbf{F}) = \frac{\partial}{\partial x}(x^3y) + \frac{\partial}{\partial y}(xz^2) + \frac{\partial}{\partial z}(y^2z) = 3x^2y + y^2.
+      \]
+      The curl is
+      \[
+        \operatorname{curl}(\mathbf{F}) = \nabla \times \mathbf{F} =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          x^3y &amp; xz^2 &amp; y^2z
+        \end{vmatrix}
+      \]
+      \[
+        = \left(\frac{\partial}{\partial y}(y^2z) - \frac{\partial}{\partial z}(xz^2)\right)\mathbf{i}
+          - \left(\frac{\partial}{\partial x}(y^2z) - \frac{\partial}{\partial z}(x^3y)\right)\mathbf{j}
+          + \left(\frac{\partial}{\partial x}(xz^2) - \frac{\partial}{\partial y}(x^3y)\right)\mathbf{k}
+      \]
+      \[
+        = (2yz - 2xz)\mathbf{i} + (z^2 - x^3)\mathbf{k}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-4" value="4"><div class="problem-top"><a class="problem-link" href="#problem-4" aria-label="Link to exercise 4">04</a><span>Chapter 6 · Exercise 4</span></div><div class="question">
+  Compute the divergence and the curl of the vector field
+  \(\mathbf{F} = y\mathbf{i} - z\mathbf{k}\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 4</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> The divergence is
+      \[
+        \operatorname{div}(\mathbf{F}) = \frac{\partial}{\partial x}(y) + \frac{\partial}{\partial y}(0) + \frac{\partial}{\partial z}(-z) = 0 + 0 - 1 = -1.
+      \]
+      The curl is
+      \[
+        \operatorname{curl}(\mathbf{F}) = \nabla \times \mathbf{F} =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          y &amp; 0 &amp; -z
+        \end{vmatrix}
+      \]
+      \[
+        = \left(\frac{\partial}{\partial y}(-z) - \frac{\partial}{\partial z}(0)\right)\mathbf{i}
+          - \left(\frac{\partial}{\partial x}(-z) - \frac{\partial}{\partial z}(y)\right)\mathbf{j}
+          + \left(\frac{\partial}{\partial x}(0) - \frac{\partial}{\partial y}(y)\right)\mathbf{k}
+      \]
+      \[
+        = 0\mathbf{i} + 0\mathbf{j} - 1\mathbf{k} = -\mathbf{k}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-5" value="5"><div class="problem-top"><a class="problem-link" href="#problem-5" aria-label="Link to exercise 5">05</a><span>Chapter 6 · Exercise 5</span></div><div class="question">
+  Compute the divergence and the curl of the vector field
+  \(\mathbf{F} = \langle e^{x+y}, e^{y+z}, xyz \rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 5</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> The divergence is
+      \[
+        \operatorname{div}(\mathbf{F}) = \frac{\partial}{\partial x}(e^{x+y}) + \frac{\partial}{\partial y}(e^{y+z}) + \frac{\partial}{\partial z}(xyz) = e^{x+y} + e^{y+z} + xy.
+      \]
+      The curl is
+      \[
+        \operatorname{curl}(\mathbf{F}) =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          e^{x+y} &amp; e^{y+z} &amp; xyz
+        \end{vmatrix}
+      \]
+      \[
+        = \left(\frac{\partial}{\partial y}(xyz) - \frac{\partial}{\partial z}(e^{y+z})\right)\mathbf{i}
+          - \left(\frac{\partial}{\partial x}(xyz) - \frac{\partial}{\partial z}(e^{x+y})\right)\mathbf{j}
+          + \left(\frac{\partial}{\partial x}(e^{y+z}) - \frac{\partial}{\partial y}(e^{x+y})\right)\mathbf{k}
+      \]
+      \[
+        = (xz - e^{y+z})\mathbf{i} - (yz)\mathbf{j} - e^{x+y}\mathbf{k}
+        = \langle xz - e^{y+z},\, -yz,\, -e^{x+y} \rangle.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-6" value="6"><div class="problem-top"><a class="problem-link" href="#problem-6" aria-label="Link to exercise 6">06</a><span>Chapter 6 · Exercise 6</span></div><div class="question">
+  Show that if \(P(x)\), \(Q(y)\), and \(R(z)\) are differentiable functions of one variable, then
+  \[
+    \operatorname{curl}\!\left(\langle P(x), Q(y), R(z)\rangle\right) = \mathbf{0}.
+  \]
+  Use this to calculate the curl of
+  \[
+    \mathbf{F}(x,y,z) = \langle x^2+y^2,\; \ln y + z^2,\; z^3\sin(z^2)e^{z^3} \rangle.
+  \]
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 6</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> We compute the curl directly:
+      \[
+        \operatorname{curl}\langle P(x), Q(y), R(z)\rangle =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          P(x) &amp; Q(y) &amp; R(z)
+        \end{vmatrix}
+      \]
+      \[
+        = \left(\frac{\partial R}{\partial y} - \frac{\partial Q}{\partial z}\right)\mathbf{i}
+          - \left(\frac{\partial R}{\partial x} - \frac{\partial P}{\partial z}\right)\mathbf{j}
+          + \left(\frac{\partial Q}{\partial x} - \frac{\partial P}{\partial y}\right)\mathbf{k}.
+      \]
+      Since \(P\), \(Q\), \(R\) depend only on their respective variables, all cross-partial derivatives are \(0\), so \(\operatorname{curl}\langle P,Q,R\rangle = \mathbf{0}\).
+
+      <br/><br/>Now we use linearity of the curl:
+      \[
+        \operatorname{curl}\,\mathbf{F} = \operatorname{curl}\langle x^2+y^2, \ln y+z^2, z^3\sin(z^2)e^{z^3}\rangle
+      \]
+      \[
+        = \operatorname{curl}\langle x^2, \ln y, z^3\sin(z^2)e^{z^3}\rangle + \operatorname{curl}\langle y^2, z^2, 0\rangle = \mathbf{0} + \operatorname{curl}\langle y^2, z^2, 0\rangle.
+      \]
+      Computing the remaining curl:
+      \[
+        \operatorname{curl}\langle y^2, z^2, 0\rangle =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          y^2 &amp; z^2 &amp; 0
+        \end{vmatrix}
+        = \langle -2z, 0, -2y\rangle.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-7" value="7"><div class="problem-top"><a class="problem-link" href="#problem-7" aria-label="Link to exercise 7">07</a><span>Chapter 6 · Exercise 7</span></div><div class="question">
+  Give an example of a nonzero vector field \(\mathbf{F}\) such that \(\operatorname{curl}(\mathbf{F}) = \mathbf{0}\) and \(\operatorname{div}(\mathbf{F}) = 0\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 7</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> Let \(\mathbf{F} = \langle x, -y, 0\rangle\). Then
+      \[
+        \operatorname{curl}(\mathbf{F}) =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          x &amp; -y &amp; 0
+        \end{vmatrix}
+        = \left(\frac{\partial}{\partial y}(0) - \frac{\partial}{\partial z}(-y)\right)\mathbf{i}
+          - \left(\frac{\partial}{\partial x}(0) - \frac{\partial}{\partial z}(x)\right)\mathbf{j}
+          + \left(\frac{\partial}{\partial x}(-y) - \frac{\partial}{\partial y}(x)\right)\mathbf{k}
+        = \mathbf{0}.
+      \]
+      \[
+        \operatorname{div}(\mathbf{F}) = \frac{\partial}{\partial x}(x) + \frac{\partial}{\partial y}(-y) + \frac{\partial}{\partial z}(0) = 1 - 1 + 0 = 0.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-8" value="8"><div class="problem-top"><a class="problem-link" href="#problem-8" aria-label="Link to exercise 8">08</a><span>Chapter 6 · Exercise 8</span></div><div class="question">
+  Verify the identity \(\operatorname{div}(\operatorname{curl}\,\mathbf{F}) = 0\) for
+  \(\mathbf{F} = \langle xz, ye^x, yz\rangle\) and \(\mathbf{G} = \langle z^2, xy^3, x^2y\rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 8</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong>
+<em>For \(\mathbf{F}\):</em>
+      \[
+        \operatorname{curl}\,\mathbf{F} =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          xz &amp; ye^x &amp; yz
+        \end{vmatrix}
+        = (z-0)\mathbf{i} - (0-x)\mathbf{j} + (ye^x-0)\mathbf{k} = z\mathbf{i} + x\mathbf{j} + ye^x\mathbf{k}.
+      \]
+      \[
+        \operatorname{div}(\operatorname{curl}\,\mathbf{F}) = \frac{\partial z}{\partial x} + \frac{\partial x}{\partial y} + \frac{\partial(ye^x)}{\partial z} = 0.
+      \]
+
+      <em>For \(\mathbf{G}\):</em>
+      \[
+        \operatorname{curl}\,\mathbf{G} =
+        \begin{vmatrix}
+          \mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
+          \frac{\partial}{\partial x} &amp; \frac{\partial}{\partial y} &amp; \frac{\partial}{\partial z} \\
+          z^2 &amp; xy^3 &amp; x^2y
+        \end{vmatrix}
+        = (x^2-0)\mathbf{i} + (2z-2xy)\mathbf{j}+(y^3-0)\mathbf{k} = x^2\mathbf{i} + (2z-2xy)\mathbf{j} + y^3\mathbf{k}.
+      \]
+      \[
+        \operatorname{div}(\operatorname{curl}\,\mathbf{G}) = \frac{\partial(x^2)}{\partial x} + \frac{\partial(2z-2xy)}{\partial y} + \frac{\partial(y^3)}{\partial z} = 2x + (-2x) + 0 = 0.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="potentials" aria-labelledby="potentials-title"><div class="topic-heading"><h3 id="potentials-title">Conservative fields & potentials</h3><span>9–12</span></div><ol class="problems" start="9"></ol><p class="given">Determine whether each field is conservative, and if so, find a potential function.</p><ol class="problems" start="9"><li class="problem" id="problem-9" value="9"><div class="problem-top"><a class="problem-link" href="#problem-9" aria-label="Link to exercise 9">09</a><span>Chapter 6 · Exercise 9</span></div><div class="question">
+  \(\mathbf{F}(x,y) = \langle x^2y,\, y^2x \rangle\)
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 9</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> Check cross-partials:
+      \[
+        \frac{\partial P}{\partial y} = \frac{\partial}{\partial y}(x^2y) = x^2, \qquad
+        \frac{\partial Q}{\partial x} = \frac{\partial}{\partial x}(y^2x) = y^2.
+      \]
+      Since \(x^2 \neq y^2\) in general, \(\mathbf{F}\) is <strong>not conservative</strong>.
+    </div>
+</details></li><li class="problem" id="problem-10" value="10"><div class="problem-top"><a class="problem-link" href="#problem-10" aria-label="Link to exercise 10">10</a><span>Chapter 6 · Exercise 10</span></div><div class="question">
+  \(\mathbf{F}(x,y,z) = \langle \sin x,\, e^y,\, z\rangle\)
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 10</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> Since \(P = \sin x\), \(Q = e^y\), \(R = z\), all cross-partials are zero and equal, so \(\mathbf{F}\) is <strong>conservative</strong>.
+
+      Integrating each component:
+      \[
+        V = -\cos x + e^y + \tfrac{1}{2}z^2.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-11" value="11"><div class="problem-top"><a class="problem-link" href="#problem-11" aria-label="Link to exercise 11">11</a><span>Chapter 6 · Exercise 11</span></div><div class="question">
+  \(\displaystyle\mathbf{F}(x,y,z) = \left\langle xyz,\, \tfrac{1}{2}x^2z,\, 2z^2y\right\rangle\)
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 11</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> Check one pair of cross-partials:
+      \[
+        \frac{\partial P}{\partial z} = \frac{\partial}{\partial z}(xyz) = xy, \qquad
+        \frac{\partial R}{\partial x} = \frac{\partial}{\partial x}(2z^2y) = 0.
+      \]
+      Since \(xy \neq 0\) in general, \(\mathbf{F}\) is <strong>not conservative</strong>.
+    </div>
+</details></li><li class="problem" id="problem-12" value="12"><div class="problem-top"><a class="problem-link" href="#problem-12" aria-label="Link to exercise 12">12</a><span>Chapter 6 · Exercise 12</span></div><div class="question">
+  \(\displaystyle\mathbf{F}(x,y,z) = \left\langle \frac{y}{1+x^2},\, \tan^{-1}x,\, 2z\right\rangle\)
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 12</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> All three cross-partial conditions hold:
+      \[
+        \frac{\partial P}{\partial y} = \frac{1}{1+x^2} = \frac{\partial Q}{\partial x}, \qquad
+        \frac{\partial Q}{\partial z} = 0 = \frac{\partial R}{\partial y}, \qquad
+        \frac{\partial R}{\partial x} = 0 = \frac{\partial P}{\partial z}.
+      \]
+      So \(\mathbf{F}\) is <strong>conservative</strong>. Integrating:
+      \[
+        V(x,y,z) = y\tan^{-1}(x) + z^2.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="scalar-lines" aria-labelledby="scalar-lines-title"><div class="topic-heading"><h3 id="scalar-lines-title">Scalar line integrals</h3><span>13–18</span></div><ol class="problems" start="13"></ol><p class="given">In Exercises 13–16, compute the scalar line integral \(\int_C f\,ds\).</p><ol class="problems" start="13"><li class="problem" id="problem-13" value="13"><div class="problem-top"><a class="problem-link" href="#problem-13" aria-label="Link to exercise 13">13</a><span>Chapter 6 · Exercise 13</span></div><div class="question">
+  \(f(x,y) = xy\), path \(\mathbf{r}(t) = \langle t, 2t-1\rangle\), \(0\le t\le 1\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 13</span></summary>
+<div class="sol-body">
+<strong>Step 1.</strong> \(\mathbf{r}'(t) = \langle 1,2\rangle\), so \(\|\mathbf{r}'(t)\| = \sqrt{5}\).
+
+      <strong>Step 2.</strong> \(f(\mathbf{r}(t)) = t(2t-1) = 2t^2-t\).
+      \[
+        \int_C f\,ds = \int_0^1(2t^2-t)\sqrt{5}\,dt = \sqrt{5}\left[\frac{2}{3}t^3-\frac{1}{2}t^2\right]_0^1 = \sqrt{5}\cdot\frac{1}{6} = \frac{\sqrt{5}}{6}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-14" value="14"><div class="problem-top"><a class="problem-link" href="#problem-14" aria-label="Link to exercise 14">14</a><span>Chapter 6 · Exercise 14</span></div><div class="question">
+  \(f(x,y) = x-y\), the unit semicircle \(x^2+y^2=1\), \(y\ge 0\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 14</span></summary>
+<div class="sol-body">
+      Parametrize by \(\mathbf{r}(t) = \langle\cos t,\sin t\rangle\), \(0\le t\le\pi\). Then \(\|\mathbf{r}'(t)\| = 1\) and \(f(\mathbf{r}(t)) = \cos t - \sin t\).
+      \[
+        \int_C f\,ds = \int_0^\pi(\cos t - \sin t)\,dt = \left[\sin t + \cos t\right]_0^\pi = (0-1)-(0+1) = -2.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-15" value="15"><div class="problem-top"><a class="problem-link" href="#problem-15" aria-label="Link to exercise 15">15</a><span>Chapter 6 · Exercise 15</span></div><div class="question">
+  \(\displaystyle f(x,y,z) = e^x - \frac{y}{2\sqrt{2}\,z}\), path \(\mathbf{r}(t) = \left\langle\ln t,\,\sqrt{2}\,t,\,\tfrac{1}{2}t^2\right\rangle\), \(1\le t\le 2\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 15</span></summary>
+<div class="sol-body">
+<strong>Step 1.</strong>
+      \[
+        \mathbf{r}'(t) = \left\langle\frac{1}{t},\sqrt{2},t\right\rangle, \quad
+        \|\mathbf{r}'(t)\| = \sqrt{\frac{1}{t^2}+2+t^2} = \frac{1}{t}+t.
+      \]
+
+      <strong>Step 2.</strong>
+      \[
+        f(\mathbf{r}(t)) = e^{\ln t} - \frac{\sqrt{2}\,t}{2\sqrt{2}\cdot\frac{1}{2}t^2} = t - \frac{1}{t}.
+      \]
+      \[
+        \int_C f\,ds = \int_1^2\left(t-\frac{1}{t}\right)\left(t+\frac{1}{t}\right)dt = \int_1^2\left(t^2-\frac{1}{t^2}\right)dt
+        = \left[\frac{t^3}{3}+\frac{1}{t}\right]_1^2 = \left(\frac{8}{3}+\frac{1}{2}\right)-\left(\frac{1}{3}+1\right) = \frac{11}{6}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-16" value="16"><div class="problem-top"><a class="problem-link" href="#problem-16" aria-label="Link to exercise 16">16</a><span>Chapter 6 · Exercise 16</span></div><div class="question">
+  \(f(x,y,z) = x+2y+z\), the helix \(\mathbf{r}(t) = \langle\cos t,\sin t,t\rangle\), \(-1\le t\le 3\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 16</span></summary>
+<div class="sol-body">
+      \(\|\mathbf{r}'(t)\| = \sqrt{\sin^2t+\cos^2t+1} = \sqrt{2}\), and \(f(\mathbf{r}(t)) = \cos t+2\sin t+t\).
+      \[
+        \int_C f\,ds = \sqrt{2}\int_{-1}^3(\cos t+2\sin t+t)\,dt
+        = \sqrt{2}\left[\sin t - 2\cos t+\frac{t^2}{2}\right]_{-1}^3 \approx 11.375.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-17" value="17"><div class="problem-top"><a class="problem-link" href="#problem-17" aria-label="Link to exercise 17">17</a><span>Chapter 6 · Exercise 17</span></div><div class="question">
+  Find the total mass of an L-shaped rod consisting of the segments \(\langle 2t, 2\rangle\) and \(\langle 2, 2-2t\rangle\) for \(0\le t\le 1\) (length in centimeters) with mass density \(\rho(x,y) = x^2y\ \text{g/cm}\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 17</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong>
+      \[M = \int_{AB} x^2y\,ds + \int_{BC} x^2y\,ds.\]
+      Segment \(AB\): \(\mathbf{c}_1(t)=(2t,2)\), \(\|\mathbf{c}_1'\|=2\), \(f=8t^2\).
+      Segment \(BC\): \(\mathbf{c}_2(t)=(2,2-2t)\), \(\|\mathbf{c}_2'\|=2\), \(f=8-8t\).
+      \[
+        M = \int_0^1 8t^2\cdot 2\,dt + \int_0^1(8-8t)\cdot 2\,dt
+        = \frac{16t^3}{3}\bigg|_0^1 + \left(16t-8t^2\right)\bigg|_0^1
+        = \frac{16}{3}+8 = \frac{40}{3} \approx 13.\overline{3}\ \text{g}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-18" value="18"><div class="problem-top"><a class="problem-link" href="#problem-18" aria-label="Link to exercise 18">18</a><span>Chapter 6 · Exercise 18</span></div><div class="question">
+  Calculate \(\mathbf{F} = \nabla f\) where \(f(x,y,z)=xyze^z\), and compute \(\displaystyle\int_C\mathbf{F}\cdot d\mathbf{r}\) for:
+  <ol class="subparts" type="a">
+<li>\(C\) is any curve from \((1,1,0)\) to \((3,e,-1)\).</li>
+<li>\(C\) is the boundary of the square \(0\le x\le 1\), \(0\le y\le 1\), oriented counterclockwise.</li>
+</ol>
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 18</span></summary><div class="sol-body">\[ \nabla(xyze^z)=\langle yze^z,xze^z,xy(1+z)e^z\rangle. \]\[ \int_C\nabla f\cdot d\mathbf r=f(3,e,-1)-f(1,1,0)=-3-0=-3. \]<p>For the closed square, the integral is 0.</p><p class="source-note"><strong>Source clarification.</strong> The supplied solution used \(f=xye^z\). For that alternate potential the endpoint integral would be 2. The question includes the extra factor \(z\).</p></div></details></li></ol></section><section class="topic" id="vector-lines" aria-labelledby="vector-lines-title"><div class="topic-heading"><h3 id="vector-lines-title">Vector line integrals & work</h3><span>19–26</span></div><ol class="problems" start="19"><li class="problem" id="problem-19" value="19"><div class="problem-top"><a class="problem-link" href="#problem-19" aria-label="Link to exercise 19">19</a><span>Chapter 6 · Exercise 19</span></div><div class="question">
+  Calculate \(\displaystyle\int_{C_1} y\,dx + x^2y\,dy\), where \(C_1\) is the oriented curve below (path \(A\to O\to B\to\) arc back to \(A\), where \(O=(0,0)\), \(A=(0,3)\), \(B=(3,0)\)).
+  <br/><img alt="Diagram for exercise 19: E4SG fig1" decoding="async" loading="lazy" src="images/E4SG_fig1.png"/>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 19</span></summary>
+<div class="sol-body">
+<strong>Solution.</strong> \(\mathbf{F} = \langle y, x^2y\rangle\). We split \(C_1 = \overline{AO} + \overline{OB} + \text{arc }BA\).
+      <br/><img alt="Diagram for exercise 19: E4SG tikz1" decoding="async" loading="lazy" src="images/E4SG_tikz1.png"/>
+<ul class="bullet-list">
+<li><em>Segment \(\overline{AO}\):</em> \(\mathbf{r}(t)=(0,-t)\), \(-3\le t\le 0\). \(\mathbf{F}\cdot\mathbf{r}'=0\), so the integral is \(0\).</li>
+<li><em>Segment \(\overline{OB}\):</em> \(\mathbf{r}(t)=(t,0)\), \(0\le t\le 3\). \(\mathbf{F}=\langle 0,0\rangle\), so the integral is \(0\).</li>
+<li><em>Arc \(BA\):</em> \(\mathbf{r}(t)=\langle 3\cos t, 3\sin t\rangle\), \(0\le t\le\pi/2\). Then
+          \[
+            \mathbf{F}\cdot\mathbf{r}' = -9\sin^2t + 81\cos^3t\sin t.
+          \]
+          \[
+            \int_{\text{arc}} = \int_0^{\pi/2}\left(-9\sin^2t+81\cos^3t\sin t\right)dt = -9\frac\pi4+81\frac14 = \frac{9}{4}(9-\pi).
+          \]
+        </li>
+</ul>
+      Therefore \(\displaystyle\int_{C_1}\mathbf{F}\cdot d\mathbf{r} = \dfrac{9}{4}(9-\pi)\).
+    </div>
+</details></li><li class="problem" id="problem-20" value="20"><div class="problem-top"><a class="problem-link" href="#problem-20" aria-label="Link to exercise 20">20</a><span>Chapter 6 · Exercise 20</span></div><div class="question">
+  Let \(\mathbf{F}(x,y) = \left(9y-y^3,\; e^{\sqrt{y}}(x^2-3x)\right)\), and let \(C_2\) be the boundary of the square \([0,3]\times[0,3]\), oriented counterclockwise.
+  <ol class="subparts" type="a">
+<li>Show that \(\mathbf{F}\) is not conservative.</li>
+<li>Show that \(\displaystyle\int_{C_2}\mathbf{F}\cdot d\mathbf{r} = 0\) without computing the integral explicitly.</li>
+</ol>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 20</span></summary>
+<div class="sol-body">
+<strong>(a)</strong> With \(P=9y-y^3\) and \(Q=e^{\sqrt{y}}(x^2-3x)\):
+      \[
+        \frac{\partial P}{\partial y} = 9-3y^2 \neq e^{\sqrt{y}}(2x-3) = \frac{\partial Q}{\partial x},
+      \]
+      so \(\mathbf{F}\) is not conservative.
+      <br/><img alt="Diagram for exercise 20: E4SG 3" decoding="async" loading="lazy" src="images/E4SG_3.png"/>
+<strong>(b)</strong> On each side of the square \(\mathbf{F}\) is orthogonal to the path:
+      <ul class="bullet-list">
+<li>\(\overrightarrow{OA}\) (\(y=0\)): \(\mathbf{F}=\langle 0, x^2-3x\rangle\), which is perpendicular to the horizontal direction.</li>
+<li>\(\overrightarrow{AB}\) (\(x=3\)): \(\mathbf{F}=\langle 9y-y^3, 0\rangle\), perpendicular to the vertical direction.</li>
+<li>\(\overrightarrow{BC}\) (\(y=3\)): \(\mathbf{F}=\langle 0, e^{\sqrt{3}}(x^2-3x)\rangle\), perpendicular to the horizontal direction.</li>
+<li>\(\overrightarrow{CO}\) (\(x=0\)): \(\mathbf{F}=\langle 9y-y^3, 0\rangle\), perpendicular to the vertical direction.</li>
+</ul>
+      Hence each segment contributes \(0\) and the total integral is \(0\).
+    </div>
+</details></li></ol><p class="given">Compute the vector line integral \(\int_C\mathbf F\cdot d\mathbf r\) in Exercises 21–24.</p><ol class="problems" start="21"><li class="problem" id="problem-21" value="21"><div class="problem-top"><a class="problem-link" href="#problem-21" aria-label="Link to exercise 21">21</a><span>Chapter 6 · Exercise 21</span></div><div class="question">
+  \(\displaystyle\mathbf{F}(x,y) = \left\langle\frac{2y}{x^2+4y^2},\;\frac{-x}{x^2+4y^2}\right\rangle\), path \(\mathbf{r}(t)=\left\langle\cos t,\,\tfrac{1}{2}\sin t\right\rangle\), \(0\le t\le 2\pi\).
+  
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 21</span></summary><div class="sol-body">\[ \mathbf F(\mathbf r(t))=\langle\sin t,-\cos t\rangle,\qquad\mathbf r'(t)=\langle-\sin t,\tfrac12\cos t\rangle. \]\[ \mathbf F\cdot\mathbf r'=-\sin^2t-\frac12\cos^2t,\qquad\int_C\mathbf F\cdot d\mathbf r=-\pi-\frac\pi2=-\frac{3\pi}{2}. \]</div></details></li><li class="problem" id="problem-22" value="22"><div class="problem-top"><a class="problem-link" href="#problem-22" aria-label="Link to exercise 22">22</a><span>Chapter 6 · Exercise 22</span></div><div class="question">
+  \(\mathbf{F}(x,y) = \langle 2xy,\, x^2+y^2\rangle\), the part of the unit circle in the first quadrant oriented counterclockwise.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 22</span></summary>
+<div class="sol-body">
+      Parametrize: \(\mathbf{r}(\theta)=\langle\cos\theta,\sin\theta\rangle\), \(0\le\theta\le\pi/2\).
+      \[
+        \mathbf{F}\cdot\mathbf{r}' = -2\cos\theta\sin^2\theta+\cos\theta.
+      \]
+      \[
+        \int_C = \int_0^{\pi/2}(-2\cos\theta\sin^2\theta+\cos\theta)\,d\theta
+        = -2\cdot\frac{\sin^3\theta}{3}\bigg|_0^{\pi/2} + 1 = -\frac{2}{3}+1 = \frac{1}{3}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-23" value="23"><div class="problem-top"><a class="problem-link" href="#problem-23" aria-label="Link to exercise 23">23</a><span>Chapter 6 · Exercise 23</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle x^2y, y^2z, z^2x\rangle\), path \(\mathbf{r}(t)=\langle e^{-t}, e^{-2t}, e^{-3t}\rangle\), \(0\le t&lt;\infty\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 23</span></summary>
+<div class="sol-body">
+      \(\mathbf{r}'(t)=\langle -e^{-t},-2e^{-2t},-3e^{-3t}\rangle\) and \(\mathbf{F}(\mathbf{r}(t))=\langle e^{-4t}, e^{-7t}, e^{-7t}\rangle\).
+      \[
+        \mathbf{F}\cdot\mathbf{r}' = -e^{-5t}-2e^{-9t}-3e^{-10t}.
+      \]
+      \[
+        \int_C = \int_0^\infty(-e^{-5t}-2e^{-9t}-3e^{-10t})\,dt = -\frac{1}{5}-\frac{2}{9}-\frac{3}{10} = -\frac{13}{18}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-24" value="24"><div class="problem-top"><a class="problem-link" href="#problem-24" aria-label="Link to exercise 24">24</a><span>Chapter 6 · Exercise 24</span></div><div class="question">
+  \(\mathbf{F}=\nabla f\) where \(f(x,y,z)=4x^2\ln(1+y^4+z^2)\), path \(\mathbf{r}(t)=\left\langle t^3,\ln(1+t^2),e^t\right\rangle\), \(0\le t\le 1\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 24</span></summary>
+<div class="sol-body">
+      By the Fundamental Theorem:
+      \[
+        \int_C\nabla f\cdot d\mathbf{r} = f(\mathbf{r}(1))-f(\mathbf{r}(0)).
+      \]
+      \(\mathbf{r}(1)=\langle 1,\ln 2, e\rangle\), \(\mathbf{r}(0)=\langle 0,0,1\rangle\). Then \(f(\mathbf{r}(0))=0\) and
+      \[
+        f(\mathbf{r}(1)) = 4\ln\!\left(1+e^2+(\ln2)^4\right).
+      \]
+      \[
+        \int_C\mathbf{F}\cdot d\mathbf{r} = 4\ln\!\left(1+e^2+(\ln2)^4\right).
+      \]
+    </div>
+</details></li><li class="problem" id="problem-25" value="25"><div class="problem-top"><a class="problem-link" href="#problem-25" aria-label="Link to exercise 25">25</a><span>Chapter 6 · Exercise 25</span></div><div class="question">
+  Consider the line integrals \(\displaystyle\int_C\mathbf{F}\cdot d\mathbf{r}\) for the vector fields and paths shown in the figure. Which two appear to have value zero? Which appears to be negative?
+  <br/><img alt="Diagram for exercise 25: E4SG fig2" decoding="async" loading="lazy" src="images/E4SG_fig2.png"/>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 25</span></summary>
+<div class="sol-body">
+<ul class="bullet-list">
+<li><strong>(A)</strong> Positive — upper part of the ellipse contributes larger positive tangential components than the negative lower part.</li>
+<li><strong>(B)</strong> Zero — \(\mathbf{F}\) is nearly orthogonal to the ellipse; the two nonzero tangential contributions cancel.</li>
+<li><strong>(C)</strong> Zero — \(\mathbf{F}\) is orthogonal to the path at every point.</li>
+<li><strong>(D)</strong> Negative — \(\mathbf{F}\) points opposite to the path direction everywhere.</li>
+</ul>
+      The two zero integrals are <strong>(B)</strong> and <strong>(C)</strong>; the negative one is <strong>(D)</strong>.
+    </div>
+</details></li><li class="problem" id="problem-26" value="26"><div class="problem-top"><a class="problem-link" href="#problem-26" aria-label="Link to exercise 26">26</a><span>Chapter 6 · Exercise 26</span></div><div class="question">
+  Calculate the work required to move an object from \(P=(1,1,1)\) to \(Q=(3,-4,-2)\) against the force field \(\mathbf{F}(x,y,z)=-12r^{-4}\langle x,y,z\rangle\) where \(r=\sqrt{x^2+y^2+z^2}\). <em>Hint: Find a potential function.</em>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 26</span></summary>
+<div class="sol-body">
+      Observe that \(\mathbf{F}=\nabla f\) with \(f(x,y,z)=\dfrac{6}{x^2+y^2+z^2}\). Then
+      \[
+        W = -\int_{\overline{PQ}}\mathbf{F}\cdot d\mathbf{r} = -(f(Q)-f(P)) = -\left(\frac{6}{29}-\frac{6}{3}\right) = \frac{52}{29}\approx 1.79\ \text{N·m}.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="surface-integrals" aria-labelledby="surface-integrals-title"><div class="topic-heading"><h3 id="surface-integrals-title">Scalar surface integrals</h3><span>27–31</span></div><ol class="problems" start="27"><li class="problem" id="problem-27" value="27"><div class="problem-top"><a class="problem-link" href="#problem-27" aria-label="Link to exercise 27">27</a><span>Chapter 6 · Exercise 27</span></div><div class="question">
+  Calculate \(\displaystyle\iint_S e^z\,dS\), where \(S\) is the portion of the plane \(x+2y+2z=3\) with \(x,y,z\ge 0\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 27</span></summary>
+<div class="sol-body">
+      Write \(z=g(x,y)=\tfrac{3}{2}-\tfrac{x}{2}-y\). Then \(\sqrt{1+g_x^2+g_y^2}=\sqrt{1+\tfrac{1}{4}+1}=\tfrac{3}{2}\).
+      \[
+        \iint_S e^z\,dS = \frac{3}{2}e^{3/2}\int_0^3\int_0^{(3-x)/2} e^{-x/2}e^{-y}\,dy\,dx = -\frac{15}{2}+3e^{3/2}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-28" value="28"><div class="problem-top"><a class="problem-link" href="#problem-28" aria-label="Link to exercise 28">28</a><span>Chapter 6 · Exercise 28</span></div><div class="question">
+  Let \(S\) be parametrized by \(\mathbf{r}(u,v)=\left\langle 2u\sin\tfrac{v}{2},\,-2u\cos\tfrac{v}{2},\,-3v\right\rangle\), \(0\le u\le 1\), \(0\le v\le 2\pi\).
+  <ol class="subparts" type="a">
+<li>Find \(\mathbf{r}_u\), \(\mathbf{r}_v\), and the normal \(\mathbf{n}=\mathbf{r}_u\times\mathbf{r}_v\) at \(P=\mathbf{r}(1,\pi/3)\).</li>
+<li>Find the equation of the tangent plane at \(P\).</li>
+<li>Compute the surface area of \(S\).</li>
+</ol>
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 28</span></summary><div class="sol-body">\[ \mathbf r_u=\langle2\sin(v/2),-2\cos(v/2),0\rangle,\quad\mathbf r_v=\langle u\cos(v/2),u\sin(v/2),-3\rangle. \]\[ \mathbf r_u\times\mathbf r_v=\langle6\cos(v/2),6\sin(v/2),2u\rangle. \]\[ P=(1,-\sqrt3,-\pi),\qquad\mathbf n(P)=\langle3\sqrt3,3,2\rangle. \]\[ 3\sqrt3(x-1)+3(y+\sqrt3)+2(z+\pi)=0. \]\[ A=\int_0^{2\pi}\int_0^12\sqrt{9+u^2}\,du\,dv=2\pi\sqrt{10}+18\pi\ln\frac{1+\sqrt{10}}3. \]</div></details></li><li class="problem" id="problem-29" value="29"><div class="problem-top"><a class="problem-link" href="#problem-29" aria-label="Link to exercise 29">29</a><span>Chapter 6 · Exercise 29</span></div><div class="question">
+  Evaluate \(\displaystyle\iint_S x^2y\,dS\), where \(S\) is \(z=\sqrt{3}\,x+y^2\), \(-1\le x\le 1\), \(0\le y\le 1\).
+  
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 29</span></summary><div class="sol-body">\[ dS=2\sqrt{1+y^2}\,dx\,dy,\qquad I=\left(\int_{-1}^1x^2dx\right)\left(\int_0^12y\sqrt{1+y^2}dy\right). \]\[ I=\frac23\cdot\frac23(2\sqrt2-1)=\frac49(2\sqrt2-1). \]</div></details></li><li class="problem" id="problem-30" value="30"><div class="problem-top"><a class="problem-link" href="#problem-30" aria-label="Link to exercise 30">30</a><span>Chapter 6 · Exercise 30</span></div><div class="question">
+  Calculate \(\displaystyle\iint_S(x^2+y^2)e^{-z}\,dS\), where \(S\) is the cylinder \(x^2+y^2=9\), \(0\le z\le 10\). Use \(\mathbf{r}(\theta,z)=\langle 3\cos\theta,3\sin\theta,z\rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 30</span></summary>
+<div class="sol-body">
+      \(\|\mathbf{r}_\theta\times\mathbf{r}_z\| = 3\). On the surface \(x^2+y^2=9\), so \(f(\mathbf{r}(\theta,z))=9e^{-z}\).
+      \[
+        \iint_S = \int_0^{10}\int_0^{2\pi}9e^{-z}\cdot 3\,d\theta\,dz = 54\pi(1-e^{-10})\approx 54\pi.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-31" value="31"><div class="problem-top"><a class="problem-link" href="#problem-31" aria-label="Link to exercise 31">31</a><span>Chapter 6 · Exercise 31</span></div><div class="question">
+  Let \(S\) be the upper hemisphere \(x^2+y^2+z^2=1\), \(z\ge 0\). Determine whether \(\displaystyle\iint_S f\,dS\) is positive, zero, or negative (without computing) for each of the following:
+  <ol class="subparts" type="a">
+<li>\(f(x,y,z)=y^3\)</li>
+<li>\(f(x,y,z)=z^3\)</li>
+<li>\(f(x,y,z)=xy^2\)</li>
+<li>\(f(x,y,z)=z^2-2\)</li>
+</ol>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 31</span></summary>
+<div class="sol-body">
+<ol class="subparts" type="a">
+<li><strong>Zero</strong> — \(y^3\) is odd in \(y\); the hemisphere is symmetric about the \(xz\)-plane.</li>
+<li><strong>Positive</strong> — \(z^3\ge 0\) on the upper hemisphere.</li>
+<li><strong>Zero</strong> — \(f(-x,y,z)=-f(x,y,z)\); symmetric about the \(yz\)-plane.</li>
+<li><strong>Negative</strong> — on \(S\), \(z^2=1-x^2-y^2\le 1\), so \(z^2-2&lt;0\).</li>
+</ol>
+</div>
+</details></li></ol></section><section class="topic" id="flux" aria-labelledby="flux-title"><div class="topic-heading"><h3 id="flux-title">Flux through surfaces</h3><span>32–38</span></div><ol class="problems" start="32"></ol><p class="given">Compute the flux \(\iint_S\mathbf F\cdot d\mathbf S\), using the specified orientation.</p><ol class="problems" start="32"><li class="problem" id="problem-32" value="32"><div class="problem-top"><a class="problem-link" href="#problem-32" aria-label="Link to exercise 32">32</a><span>Chapter 6 · Exercise 32</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle y, x, e^{xz}\rangle\), on \(x^2+y^2=9\), \(x\ge 0\), \(y\ge 0\), \(-3\le z\le 3\), outward normal. Use \(\mathbf{r}(\theta,z)=\langle 3\cos\theta,3\sin\theta,z\rangle\), \(0\le\theta\le\pi/2\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 32</span></summary>
+<div class="sol-body">
+<img alt="Diagram for exercise 32: E4SG 32" decoding="async" loading="lazy" src="images/E4SG_32.png"/>
+<br/>\(\mathbf{r}_\theta\times\mathbf{r}_z=\langle 3\cos\theta,3\sin\theta,0\rangle\) (outward).
+      \[
+        \mathbf{F}(\mathbf{r}(\theta,z))\cdot(\mathbf{r}_\theta\times\mathbf{r}_z) = 9\sin\theta\cos\theta + 9\sin\theta\cos\theta = 18\sin\theta\cos\theta.
+      \]
+      \[
+        \iint_S\mathbf{F}\cdot d\mathbf{S} = \int_0^{\pi/2}\int_{-3}^3 18\sin\theta\cos\theta\,dz\,d\theta
+        = \int_0^{\pi/2}108\sin\theta\cos\theta\,d\theta = 54.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-33" value="33"><div class="problem-top"><a class="problem-link" href="#problem-33" aria-label="Link to exercise 33">33</a><span>Chapter 6 · Exercise 33</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle -y,z,-x\rangle\), \(\mathbf{r}(u,v)=\langle u+3v,\,u-2v,\,2v+5\rangle\), \(0\le u,v\le 1\), upward normal.
+  
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 33</span></summary><div class="sol-body">\[ \mathbf r_u=\langle1,1,0\rangle,\qquad\mathbf r_v=\langle3,-2,2\rangle. \]<p>Their cross product points downward, so use \(\mathbf n=\mathbf r_v\times\mathbf r_u=\langle-2,2,5\rangle\).</p>\[ \mathbf F(\mathbf r)=\langle-u+2v,2v+5,-u-3v\rangle,\qquad\mathbf F\cdot\mathbf n=-3u-15v+10. \]\[ \iint_S\mathbf F\cdot d\mathbf S=\int_0^1\int_0^1(-3u-15v+10)du\,dv=1. \]</div></details></li><li class="problem" id="problem-34" value="34"><div class="problem-top"><a class="problem-link" href="#problem-34" aria-label="Link to exercise 34">34</a><span>Chapter 6 · Exercise 34</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle 0,0,x^2+y^2\rangle\), upper hemisphere \(x^2+y^2+z^2=4\), \(z\ge 0\), outward normal.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 34</span></summary>
+<div class="sol-body">
+      Write \(z=\sqrt{4-x^2-y^2}\); the formula gives \(\iint_S\mathbf{F}\cdot d\mathbf{S}=\iint_D(x^2+y^2)\,dA\) over the disk \(x^2+y^2\le 4\).
+      \[
+        \iint_D(x^2+y^2)\,dA = \int_0^{2\pi}\int_0^2 r^2\cdot r\,dr\,d\theta = 2\pi\cdot 4 = 8\pi.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-35" value="35"><div class="problem-top"><a class="problem-link" href="#problem-35" aria-label="Link to exercise 35">35</a><span>Chapter 6 · Exercise 35</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle z,0,z^2\rangle\), \(\mathbf{r}(u,v)=\langle v\cosh u,\,v\sinh u,\,v\rangle\), \(0\le u,v\le 1\), upward normal.
+  <br/><span class="note">Recall: \(\sinh x = \tfrac{e^x-e^{-x}}{2}\), \(\cosh x=\tfrac{e^x+e^{-x}}{2}\), \(\cosh^2-\sinh^2=1\).</span>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 35</span></summary>
+<div class="sol-body">
+      \(\mathbf{r}_u=\langle v\sinh u,v\cosh u,0\rangle\), \(\mathbf{r}_v=\langle\cosh u,\sinh u,1\rangle\).
+      \[
+        \mathbf{r}_u\times\mathbf{r}_v = \langle v\cosh u,-v\sinh u,-v\rangle.
+      \]
+      Since the upward normal needs positive \(z\)-component: \(\mathbf{n}=\langle -v\cosh u,v\sinh u,v\rangle\).
+      \[
+        \mathbf{F}(\mathbf{r}(u,v))=\langle v,0,v^2\rangle.
+      \]
+      \[
+        \mathbf{F}\cdot\mathbf{n} = -v^2\cosh u+v^3.
+      \]
+      \[
+        \iint_S = \int_0^1\int_0^1(-v^2\cosh u+v^3)\,du\,dv = -\frac{\sinh 1}{3}+\frac{1}{4}\approx -0.1417.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-36" value="36"><div class="problem-top"><a class="problem-link" href="#problem-36" aria-label="Link to exercise 36">36</a><span>Chapter 6 · Exercise 36</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle 0,0,xze^{xy}\rangle\), \(z=xy\), \(0\le x,y\le 1\), upward normal.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 36</span></summary>
+<div class="sol-body">
+      Parametrize by \(\mathbf{r}(x,y)=\langle x,y,xy\rangle\). Then \(\mathbf{r}_x\times\mathbf{r}_y=\langle -y,-x,1\rangle\) (upward).
+      \[
+        \mathbf{F}(\mathbf{r}(x,y))=\langle 0,0,x^2ye^{xy}\rangle, \quad
+        \mathbf{F}\cdot\mathbf{n} = x^2ye^{xy}.
+      \]
+      \[
+        \iint_S = \int_0^1\int_0^1 x^2ye^{xy}\,dy\,dx = 3-e.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-37" value="37"><div class="problem-top"><a class="problem-link" href="#problem-37" aria-label="Link to exercise 37">37</a><span>Chapter 6 · Exercise 37</span></div><div class="question">
+  \(\mathbf{F}(x,y,z)=\langle 0,0,z\rangle\), on the ellipsoid \(3x^2+2y^2+z^2=1\), \(z\ge 0\), upward normal. Use the parametrization \(x=\tfrac{1}{\sqrt{3}}\sin\phi\cos\theta\), \(y=\tfrac{1}{\sqrt{2}}\sin\phi\sin\theta\), \(z=\cos\phi\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 37</span></summary>
+<div class="sol-body">
+      After computing \(\mathbf{r}_\theta\times\mathbf{r}_\phi\) and taking the upward-pointing normal:
+      \[
+        \mathbf{F}\cdot\mathbf{n} = \frac{1}{\sqrt{6}}\sin\phi\cos^2\phi.
+      \]
+      \[
+        \iint_S = \int_0^{2\pi}\int_0^{\pi/2}\frac{1}{\sqrt{6}}\sin\phi\cos^2\phi\,d\phi\,d\theta
+        = \frac{2\pi}{\sqrt{6}}\cdot\frac{1}{3} = \frac{\sqrt{2}\,\pi}{3\sqrt{3}}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-38" value="38"><div class="problem-top"><a class="problem-link" href="#problem-38" aria-label="Link to exercise 38">38</a><span>Chapter 6 · Exercise 38</span></div><div class="question">
+  Calculate the flux of \(\mathbf{E}(x,y,z)=\langle 0,0,x\rangle\) through the part of the ellipsoid \(4x^2+9y^2+z^2=36\) where \(z\ge 3\), \(x&gt;0\), \(y&gt;0\). Use the parametrization \(\mathbf{q}(r,\theta)=\langle 3r\cos\theta,2r\sin\theta,6\sqrt{1-r^2}\rangle\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 38</span></summary>
+<div class="sol-body">
+      The condition \(z\ge 3\) gives \(0\le r\le\sqrt{3}/2\). After computing the outward normal and dot product:
+      \[
+        \mathbf{E}(\mathbf{q}(\theta,r))\cdot\mathbf{n} = 18r^2\cos\theta.
+      \]
+      \[
+        \iint_S\mathbf{E}\cdot d\mathbf{S} = \int_0^{\sqrt{3}/2}\int_0^{\pi/2} 18r^2\cos\theta\,d\theta\,dr.
+      \]
+      Since \(\int_0^{\pi/2}\cos\theta\,d\theta = 1\):
+      \[
+        = \int_0^{\sqrt{3}/2}18r^2\,dr = 6r^3\bigg|_0^{\sqrt{3}/2} = 6\cdot\frac{3\sqrt{3}}{8} = \frac{9\sqrt{3}}{4}.
+      \]
+      <span class="note">(Note: if the domain were \(0\le\theta\le 2\pi\), the cosine integral over a full period gives \(0\). The problem restricts to \(x&gt;0\), \(y&gt;0\), i.e., \(0\le\theta\le\pi/2\).)</span>
+</div>
+</details></li></ol></section><section class="topic" id="green" aria-labelledby="green-title"><div class="topic-heading"><h3 id="green-title">Green’s Theorem</h3><span>39–44</span></div><ol class="problems" start="39"><li class="problem" id="problem-39" value="39"><div class="problem-top"><a class="problem-link" href="#problem-39" aria-label="Link to exercise 39">39</a><span>Chapter 6 · Exercise 39</span></div><div class="question">
+  Let \(\mathbf{F}(x,y)=\langle x+y^2,\,x^2-y\rangle\) and \(C\) be the unit circle oriented counterclockwise. Evaluate \(\oint_C\mathbf{F}\cdot d\mathbf{r}\) directly and using Green's Theorem.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 39</span></summary>
+<div class="sol-body">
+<em>Direct calculation:</em> Parametrize by \(\mathbf{r}(t)=(\cos t,\sin t)\). The integrand \(\mathbf{F}\cdot\mathbf{r}' = \cos^3t-\sin^3t-2\sin t\cos t\), and integrating over \([0,2\pi]\) gives \(0\).
+
+      <em>Green's Theorem:</em>
+      \[
+        \frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y} = 2x-2y.
+      \]
+      <img alt="Diagram for exercise 39: E4SG 39" decoding="async" loading="lazy" src="images/E4SG_39.png"/>
+      \[
+        \iint_D(2x-2y)\,dA = \int_0^{2\pi}\int_0^1 2r^2(\cos\theta-\sin\theta)\,dr\,d\theta = \frac{2}{3}\cdot 0 = 0.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-40" value="40"><div class="problem-top"><a class="problem-link" href="#problem-40" aria-label="Link to exercise 40">40</a><span>Chapter 6 · Exercise 40</span></div><div class="question">
+  Let \(\partial R\) be the boundary of the rectangle, and \(\partial R_1\), \(\partial R_2\) the boundaries of two triangles (all counterclockwise).
+  <br/><img alt="Diagram for exercise 40: E4SG fig4" decoding="async" loading="lazy" src="images/E4SG_fig4.png"/>
+<ol class="subparts" type="a">
+<li>Find \(\displaystyle\oint_{\partial R_1}\mathbf{F}\cdot d\mathbf{r}\) if \(\displaystyle\oint_{\partial R}\mathbf{F}\cdot d\mathbf{r}=4\) and \(\displaystyle\oint_{\partial R_2}\mathbf{F}\cdot d\mathbf{r}=-2\).</li>
+<li>What is \(\displaystyle\oint_{\partial R}\mathbf{F}\cdot d\mathbf{r}\) if \(\partial R\) is oriented clockwise?</li>
+</ol>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 40</span></summary>
+<div class="sol-body">
+<strong>(a)</strong> The diagonal \(\overline{DB}\) is traversed in opposite directions by \(\partial R_1\) and \(\partial R_2\), so their contributions cancel:
+      <br/><img alt="Diagram for exercise 40: E4SG 40b" decoding="async" loading="lazy" src="images/E4SG_40b.png"/>
+      \[
+        \oint_{\partial R} = \oint_{\partial R_1} + \oint_{\partial R_2} \implies 4 = \oint_{\partial R_1} - 2 \implies \oint_{\partial R_1} = 6.
+      \]
+      <strong>(b)</strong> Reversing orientation negates the integral: \(\oint_{\partial R,\text{cw}} = -4\).
+    </div>
+</details></li></ol><p class="given">Use Green’s Theorem to evaluate each line integral. Observe the orientation stated in the question.</p><ol class="problems" start="41"><li class="problem" id="problem-41" value="41"><div class="problem-top"><a class="problem-link" href="#problem-41" aria-label="Link to exercise 41">41</a><span>Chapter 6 · Exercise 41</span></div><div class="question">
+  \(\displaystyle\oint_C xy^3\,dx + x^3y\,dy\), where \(C\) is the rectangle \(-1\le x\le 2\), \(-2\le y\le 3\), counterclockwise.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 41</span></summary>
+<div class="sol-body">
+      \(\dfrac{\partial Q}{\partial x}-\dfrac{\partial P}{\partial y} = 3x^2y-3xy^2\).
+      <br/><img alt="Diagram for exercise 41: E4SG 41" decoding="async" loading="lazy" src="images/E4SG_41.png"/>
+      \[
+        \int_{-2}^3\int_{-1}^2(3x^2y-3xy^2)\,dx\,dy = \int_{-2}^3\left(-\frac{9y^2}{2}+9y\right)dy
+        = \left[-\frac{3y^3}{2}+\frac{9y^2}{2}\right]_{-2}^3 = 0 - 30 = -30.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-42" value="42"><div class="problem-top"><a class="problem-link" href="#problem-42" aria-label="Link to exercise 42">42</a><span>Chapter 6 · Exercise 42</span></div><div class="question">
+  \(\displaystyle\oint_C(3x+5y-\cos y)\,dx + x\sin y\,dy\), where \(C\) is any closed curve enclosing a region of area 4, counterclockwise.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 42</span></summary>
+<div class="sol-body">
+      \(\dfrac{\partial Q}{\partial x}-\dfrac{\partial P}{\partial y} = \sin y-(5+\sin y) = -5\).
+      \[
+        \iint_D(-5)\,dA = -5\cdot 4 = -20.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-43" value="43"><div class="problem-top"><a class="problem-link" href="#problem-43" aria-label="Link to exercise 43">43</a><span>Chapter 6 · Exercise 43</span></div><div class="question">
+  \(\displaystyle\oint_C y^2\,dx - x^2\,dy\), where \(C\) consists of arcs \(y=x^2\) and \(y=\sqrt{x}\), \(0\le x\le 1\), oriented <em>clockwise</em>.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 43</span></summary>
+<div class="sol-body">
+      \(\dfrac{\partial Q}{\partial x}-\dfrac{\partial P}{\partial y} = -2x-2y\). Since \(C\) is clockwise:
+      <br/><img alt="Diagram for exercise 43: E4SG 43" decoding="async" loading="lazy" src="images/E4SG_43.png"/>
+      \[
+        \int_C = -\iint_D(-2x-2y)\,dA = \int_0^1\int_{x^2}^{\sqrt{x}}(2x+2y)\,dy\,dx = \frac{3}{5}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-44" value="44"><div class="problem-top"><a class="problem-link" href="#problem-44" aria-label="Link to exercise 44">44</a><span>Chapter 6 · Exercise 44</span></div><div class="question">
+  \(\displaystyle\oint_C ye^x\,dx + xe^y\,dy\), where \(C\) is the triangle with vertices \((-1,0)\), \((0,4)\), \((0,1)\), counterclockwise.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 44</span></summary>
+<div class="sol-body">
+      \(\dfrac{\partial Q}{\partial x}-\dfrac{\partial P}{\partial y} = e^y-e^x\).
+      <br/><img alt="Diagram for exercise 44: E4SG 44" decoding="async" loading="lazy" src="images/E4SG_44.png"/>
+
+      The triangle has edges: \(y=x+1\) (from \((-1,0)\) to \((0,1)\)), \(y=4x+4\) (from \((-1,0)\) to \((0,4)\)), and the \(y\)-axis segment from \((0,1)\) to \((0,4)\).
+      \[
+        \iint_D(e^y-e^x)\,dA = \int_{-1}^0\int_{x+1}^{4x+4}(e^y-e^x)\,dy\,dx
+        = \frac{e^4}{4}-e+\frac{3}{4}-3e^{-1}\approx 10.58.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="area" aria-labelledby="area-title"><div class="topic-heading"><h3 id="area-title">Area from line integrals</h3><span>45–49</span></div><ol class="problems" start="45"><li class="problem" id="problem-45" value="45"><div class="problem-top"><a class="problem-link" href="#problem-45" aria-label="Link to exercise 45">45</a><span>Chapter 6 · Exercise 45</span></div><div class="question">
+  Let \(\mathbf{r}(t)=\langle t^2(1-t),\, t(t-1)^2\rangle\).
+  <ol class="subparts" type="a">
+<li>Describe/plot the path for \(0\le t\le 1\).</li>
+<li>Calculate the area enclosed using \(A=\tfrac{1}{2}\oint_C(x\,dy-y\,dx)\).</li>
+</ol>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 45</span></summary>
+<div class="sol-body">
+<strong>(a)</strong> The path is a closed loop traced clockwise as \(t\) goes from 0 to 1.
+      <br/><img alt="Diagram for exercise 45: E4SG 45" decoding="async" loading="lazy" src="images/E4SG_45.png"/>
+<strong>(b)</strong> \(x\,dy-y\,dx = -t^2(t-1)^2\,dt\). The path is clockwise, so:
+      \[
+        A = \frac{1}{2}\int_1^0 -t^2(t-1)^2\,dt = \frac{1}{2}\int_0^1(t^4-2t^3+t^2)\,dt
+        = \frac{1}{2}\left(\frac{1}{5}-\frac{1}{2}+\frac{1}{3}\right) = \frac{1}{60}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-46" value="46"><div class="problem-top"><a class="problem-link" href="#problem-46" aria-label="Link to exercise 46">46</a><span>Chapter 6 · Exercise 46</span></div><div class="question">
+  Calculate the area bounded by \(y=x^2\) and \(y=4\) using \(A=\oint_C x\,dy\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 46</span></summary>
+<div class="sol-body">
+      Orient counterclockwise: \(C_1:(t,t^2)\) from \(-2\) to \(2\); \(C_2:(-t,4)\) from \(-2\) to \(2\).
+      \[
+        A = \int_{-2}^2 t\cdot 2t\,dt + 0 = \int_{-2}^2 2t^2\,dt = \frac{32}{3}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-47" value="47"><div class="problem-top"><a class="problem-link" href="#problem-47" aria-label="Link to exercise 47">47</a><span>Chapter 6 · Exercise 47</span></div><div class="question">
+  Calculate the area bounded by \(y=x^2\) and \(y=\sqrt{x}\), \(x\ge 0\), using \(A=\oint_C x\,dy\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 47</span></summary>
+<div class="sol-body">
+      \(C_1:(t,t^2)\), \(0\le t\le 1\); \(C_2:((1-t)^2,1-t)\), \(0\le t\le 1\).
+      \[
+        A = \int_0^1 t\cdot 2t\,dt + \int_0^1(1-t)^2\cdot(-1)\,dt = \frac{2}{3}-\frac{1}{3} = \frac{1}{3}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-48" value="48"><div class="problem-top"><a class="problem-link" href="#problem-48" aria-label="Link to exercise 48">48</a><span>Chapter 6 · Exercise 48</span></div><div class="question">
+  Calculate the area bounded by \(y=x^2\) and \(y=4\) using \(A=\oint_C -y\,dx\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 48</span></summary>
+<div class="sol-body">
+      Same parametrization as Problem 46:
+      \[
+        A = -\int_{-2}^2 t^2\,dt + 4\int_{-2}^2 1\,dt = -\frac{16}{3}+16 = \frac{32}{3}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-49" value="49"><div class="problem-top"><a class="problem-link" href="#problem-49" aria-label="Link to exercise 49">49</a><span>Chapter 6 · Exercise 49</span></div><div class="question">
+  Calculate the area bounded by \(y=x^2\) and \(y=\sqrt{x}\), \(x\ge 0\), using \(A=\oint_C -y\,dx\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 49</span></summary>
+<div class="sol-body">
+      \[
+        A = -\int_0^1 t^2\,dt + \int_0^1(1-t)\cdot 2(1-t)\,dt = -\frac{1}{3}+\frac{2}{3} = \frac{1}{3}.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="identities" aria-labelledby="identities-title"><div class="topic-heading"><h3 id="identities-title">Identities & planar flux</h3><span>50–54</span></div><ol class="problems" start="50"><li class="problem" id="problem-50" value="50"><div class="problem-top"><a class="problem-link" href="#problem-50" aria-label="Link to exercise 50">50</a><span>Chapter 6 · Exercise 50</span></div><div class="question">
+  In (a)–(d), state whether the equation is an identity. If not, give a counterexample.
+  <ol class="subparts" type="a">
+<li>\(\operatorname{curl}(\nabla f) = \mathbf{0}\)</li>
+<li>\(\operatorname{div}(\nabla f) = 0\)</li>
+<li>\(\operatorname{div}(\operatorname{curl}(\mathbf{F})) = 0\)</li>
+<li>\(\nabla(\operatorname{div}(\mathbf{F})) = \mathbf{0}\)</li>
+</ol>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 50</span></summary>
+<div class="sol-body">
+<ol class="subparts" type="a">
+<li><strong>Identity.</strong> By equality of mixed partials, all components of \(\operatorname{curl}(\nabla f)\) are zero.</li>
+<li><strong>Not an identity.</strong> Take \(f=x^2+y+z\); then \(\operatorname{div}(\nabla f)=2\neq 0\).</li>
+<li><strong>Identity.</strong> By equality of mixed partials, the terms cancel pairwise.</li>
+<li><strong>Not an identity.</strong> Take \(\mathbf{F}=\langle x^2,y,z\rangle\); then \(\nabla(\operatorname{div}\mathbf{F})=\langle 2,0,0\rangle\neq\mathbf{0}\).</li>
+</ol>
+</div>
+</details></li><li class="problem" id="problem-51" value="51"><div class="problem-top"><a class="problem-link" href="#problem-51" aria-label="Link to exercise 51">51</a><span>Chapter 6 · Exercise 51</span></div><div class="question">
+  Let \(\mathbf{F}(x,y)=\langle x^2y,\,xy^2\rangle\). Find all points where the angular velocity of a paddle wheel is zero (i.e., where \(\operatorname{curl}(\mathbf{F})=\mathbf{0}\)).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 51</span></summary>
+<div class="sol-body">
+      \[
+        \operatorname{curl}(\mathbf{F}) = \langle 0,0,y^2-x^2\rangle.
+      \]
+      This vanishes when \(y^2=x^2\), i.e., along the lines \(y=x\) and \(y=-x\).
+    </div>
+</details></li><li class="problem" id="problem-52" value="52"><div class="problem-top"><a class="problem-link" href="#problem-52" aria-label="Link to exercise 52">52</a><span>Chapter 6 · Exercise 52</span></div><div class="question">
+  Compute the flux \(\displaystyle\oint_{\partial D}\mathbf{F}\cdot\mathbf{N}\,ds\) of \(\mathbf{F}(x,y)=\langle x^3,\,yx^2\rangle\) across the unit square \(D\) using \(\displaystyle\oint_{\partial D}\mathbf{F}\cdot\mathbf{N}\,ds = \iint_D\operatorname{div}\mathbf{F}\,dA\).
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 52</span></summary>
+<div class="sol-body">
+      \(\operatorname{div}\mathbf{F} = 3x^2+x^2 = 4x^2\).
+      \[
+        \iint_D 4x^2\,dA = \int_0^1\int_0^1 4x^2\,dy\,dx = \int_0^1 4x^2\,dx = \frac{4}{3}.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-53" value="53"><div class="problem-top"><a class="problem-link" href="#problem-53" aria-label="Link to exercise 53">53</a><span>Chapter 6 · Exercise 53</span></div><div class="question">
+  Compute the flux \(\displaystyle\oint_{\partial D}\mathbf{F}\cdot\mathbf{N}\,ds\) of \(\mathbf{F}(x,y)=\langle x^3+2x,\,x^3+y\rangle\) across the circle \(x^2+y^2=4\).
+  
+</div><details class="solution"><summary>Solution <span class="sr-only">to exercise 53</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=\frac{\partial}{\partial x}(x^3+2x)+\frac{\partial}{\partial y}(x^3+y)=3x^2+3. \]\[ \oint_{\partial D}\mathbf F\cdot\mathbf N\,ds=3\iint_Dx^2dA+3\operatorname{Area}(D)=3(4\pi)+3(4\pi)=24\pi. \]<p class="source-note"><strong>Source clarification.</strong> For the alternate field \(\langle x^3+2x,y^3+y\rangle\), the flux is \(36\pi\). Here the second component is the printed \(x^3+y\).</p></div></details></li><li class="problem" id="problem-54" value="54"><div class="problem-top"><a class="problem-link" href="#problem-54" aria-label="Link to exercise 54">54</a><span>Chapter 6 · Exercise 54</span></div><div class="question">
+  Suppose \(\displaystyle\oint_{C_2}\mathbf{F}\cdot d\mathbf{r}=12\). Use Green's Theorem to find \(\displaystyle\oint_{C_1}\mathbf{F}\cdot d\mathbf{r}\), given \(\dfrac{\partial Q}{\partial x}-\dfrac{\partial P}{\partial y}=-3\) in \(D\), where \(D\) is a \(6\times 10\) rectangle with a circular hole of radius 2 (\(C_2\) is the inner circle, \(C_1\) the outer rectangle).
+  <br/><img alt="Diagram for exercise 54: 17.1.24" decoding="async" loading="lazy" src="images/17.1.24.png"/>
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 54</span></summary>
+<div class="sol-body">
+      By Green's Theorem:
+      \[
+        \int_{C_1}\mathbf{F}\cdot d\mathbf{r} - \int_{C_2}\mathbf{F}\cdot d\mathbf{r} = \iint_D(-3)\,dA = -3\,\text{Area}(D).
+      \]
+      \[
+        \text{Area}(D) = 6\cdot 10 - \pi(2)^2 = 60-4\pi.
+      \]
+      \[
+        \int_{C_1}\mathbf{F}\cdot d\mathbf{r} = 12 - 3(60-4\pi) = 12\pi - 168 \approx -130.3.
+      \]
+    <p>This sign convention takes both curves counterclockwise. The positively oriented boundary of the region with a hole traverses the inner circle clockwise.</p></div>
+</details></li></ol></section><section class="topic" id="stokes" aria-labelledby="stokes-title"><div class="topic-heading"><h3 id="stokes-title">Stokes’ Theorem</h3><span>55–57</span></div><ol class="problems" start="55"><li class="problem" id="problem-55" value="55"><div class="problem-top"><a class="problem-link" href="#problem-55" aria-label="Link to exercise 55">55</a><span>Chapter 6 · Exercise 55</span></div><div class="question">
+  Verify Stokes' Theorem for \(\mathbf{F}=\langle yz,0,x\rangle\) and the surface \(S\): portion of \(\tfrac{x}{2}+\tfrac{y}{3}+z=1\) with \(x,y,z\ge 0\), upward normal.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 55</span></summary>
+<div class="sol-body">
+<strong>Step 1.</strong> Boundary curve \(C = C_1\cup C_2\cup C_3\):
+      <br/><img alt="Diagram for exercise 55: E4SG 55" decoding="async" loading="lazy" src="images/E4SG_55.png"/>
+      \[
+        C_1:\mathbf{r}_1(t)=(2-2t,3t,0),\quad
+        C_2:\mathbf{r}_2(t)=(0,3-3t,t),\quad
+        C_3:\mathbf{r}_3(t)=(2t,0,1-t),\quad 0\le t\le 1.
+      \]
+      Computing each dot product: \(\mathbf{F}\cdot\mathbf{r}_1'=0\), \(\mathbf{F}\cdot\mathbf{r}_2'=0\), \(\mathbf{F}\cdot\mathbf{r}_3'=-2t\).
+      \[
+        \int_C\mathbf{F}\cdot d\mathbf{r} = \int_0^1(-2t)\,dt = -1. \tag{1}\label{exam4-equation-1}
+      \]
+
+      <strong>Step 2.</strong>
+      \[
+        \operatorname{curl}(\mathbf{F}) = \langle 0, y-1, -z\rangle.
+      \]
+
+      <strong>Step 3.</strong> Parametrize \(S\) by \(\mathbf{r}(x,y)=\langle x,y,1-\tfrac{x}{2}-\tfrac{y}{3}\rangle\).
+      <br/><img alt="Diagram for exercise 55: E4SG 55b" decoding="async" loading="lazy" src="images/E4SG_55b.png"/>
+      Normal: \(\mathbf{n}=\langle\tfrac{1}{2},\tfrac{1}{3},1\rangle\).
+      \[
+        \operatorname{curl}(\mathbf{F})\cdot\mathbf{n} = \frac{x}{2}+\frac{2y}{3}-\frac{4}{3}.
+      \]
+      \[
+        \iint_S\operatorname{curl}(\mathbf{F})\cdot d\mathbf{S} = \int_0^2\int_0^{-3x/2+3}\left(\frac{x}{2}+\frac{2y}{3}-\frac{4}{3}\right)dy\,dx = -1. \tag{2}\label{exam4-equation-2}
+      \]
+      Equations (1) and (2) agree. ✓
+    </div>
+</details></li><li class="problem" id="problem-56" value="56"><div class="problem-top"><a class="problem-link" href="#problem-56" aria-label="Link to exercise 56">56</a><span>Chapter 6 · Exercise 56</span></div><div class="question">
+  Let \(\mathbf{F}=\langle 3z,5x,-2y\rangle\) and \(S\) be the paraboloid \(z=x^2+y^2\), \(z\le 4\), upward normal. Calculate \(\operatorname{curl}\mathbf{F}\) and use Stokes' Theorem to compute \(\displaystyle\iint_S\operatorname{curl}\mathbf{F}\cdot d\mathbf{S}\) as a line integral.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 56</span></summary>
+<div class="sol-body">
+      \[
+        \operatorname{curl}(\mathbf{F}) = \langle -2, 3, 5\rangle.
+      \]
+      The boundary is the circle \(x^2+y^2=4\), \(z=4\), counterclockwise. Parametrize: \(\mathbf{r}(t)=\langle 2\cos t,2\sin t,4\rangle\).
+      \[
+        \mathbf{F}(\mathbf{r}(t))\cdot\mathbf{r}'(t) = \langle 12,10\cos t,-4\sin t\rangle\cdot\langle -2\sin t,2\cos t,0\rangle = -24\sin t+20\cos^2t.
+      \]
+      \[
+        \int_C\mathbf{F}\cdot d\mathbf{r} = \int_0^{2\pi}(-24\sin t+10+10\cos 2t)\,dt = 20\pi.
+      \]
+    </div>
+</details></li><li class="problem" id="problem-57" value="57"><div class="problem-top"><a class="problem-link" href="#problem-57" aria-label="Link to exercise 57">57</a><span>Chapter 6 · Exercise 57</span></div><div class="question">
+  Let \(\mathbf{F}=\langle yz,xy,xz\rangle\) and \(C\) be the square with vertices \((0,0,2)\), \((1,0,2)\), \((1,1,2)\), \((0,1,2)\), counterclockwise from above. Apply Stokes' Theorem.
+  
+</div><details class="solution">
+<summary>Solution <span class="sr-only">to exercise 57</span></summary>
+<div class="sol-body">
+      Take \(S\) to be the interior square, parametrized by \(\mathbf{r}(x,y)=\langle x,y,2\rangle\). Normal: \(\mathbf{r}_x\times\mathbf{r}_y=\langle 0,0,1\rangle\) (upward).
+
+      \[
+        \operatorname{curl}(\mathbf{F}) = \langle 0, y-z, y-z\rangle.
+      \]
+      At \(z=2\): \(\operatorname{curl}(\mathbf{F})=\langle 0,y-2,y-2\rangle\).
+      \[
+        \operatorname{curl}(\mathbf{F})\cdot\langle 0,0,1\rangle = y-2.
+      \]
+      \[
+        \iint_S = \int_0^1\int_0^1(y-2)\,dy\,dx = \frac{1}{2}-2 = -\frac{3}{2}.
+      \]
+    </div>
+</details></li></ol></section><section class="topic" id="divergence" aria-labelledby="divergence-title"><div class="topic-heading"><h3 id="divergence-title">Divergence Theorem</h3><span>58–62</span></div><ol class="problems" start="58"><li class="problem" id="problem-58" value="58"><div class="problem-top"><a class="problem-link" href="#problem-58" aria-label="Link to exercise 58">58</a><span>Chapter 6 · Exercise 58</span></div><div class="question"><p>\(\mathbf F=\langle xy,yz,x^2z+z^2\rangle\). Use the Divergence Theorem to calculate the outward flux across the boundary of \([0,1]\times[2,4]\times[1,5]\).</p></div><details class="solution"><summary>Solution <span class="sr-only">to exercise 58</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=x^2+y+3z. \]\[ \iint_S\mathbf F\cdot d\mathbf S=\int_1^5\int_2^4\int_0^1(x^2+y+3z)dx\,dy\,dz=\frac{296}{3}. \]</div></details></li><li class="problem" id="problem-59" value="59"><div class="problem-top"><a class="problem-link" href="#problem-59" aria-label="Link to exercise 59">59</a><span>Chapter 6 · Exercise 59</span></div><div class="question"><p>\(\mathbf F=\langle xy,yz,x^2z+z^2\rangle\). Use the Divergence Theorem to calculate the outward flux across the unit sphere.</p></div><details class="solution"><summary>Solution <span class="sr-only">to exercise 59</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=x^2+y+3z. \]<p>The odd terms integrate to zero over the unit ball. By symmetry,</p>\[ \iint_S\mathbf F\cdot d\mathbf S=\iiint_Bx^2dV=\frac13\iiint_Br^2dV=\frac13\cdot4\pi\int_0^1r^4dr=\frac{4\pi}{15}. \]</div></details></li><li class="problem" id="problem-60" value="60"><div class="problem-top"><a class="problem-link" href="#problem-60" aria-label="Link to exercise 60">60</a><span>Chapter 6 · Exercise 60</span></div><div class="question"><p>\(\mathbf F=\langle xyz+xy,\tfrac12y^2(1-z)+e^x,e^{x^2+y^2}\rangle\). Use the Divergence Theorem to find the outward flux across the boundary of the solid bounded by \(x^2+y^2=16\), \(z=0\), and \(z=y-4\).</p></div><details class="solution"><summary>Solution <span class="sr-only">to exercise 60</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=yz+y+y(1-z)=2y. \]\[ \iint_S\mathbf F\cdot d\mathbf S=\iint_{x^2+y^2\le16}\int_{y-4}^02y\,dz\,dA=\iint_D(8y-2y^2)dA=-128\pi. \]</div></details></li><li class="problem" id="problem-61" value="61"><div class="problem-top"><a class="problem-link" href="#problem-61" aria-label="Link to exercise 61">61</a><span>Chapter 6 · Exercise 61</span></div><div class="question"><p>\(\mathbf F=\langle\sin(yz),\sqrt{x^2+z^4},x\cos(x-y)\rangle\). Find the outward flux across any smooth closed surface bounding a region in \(\mathbb R^3\).</p></div><details class="solution"><summary>Solution <span class="sr-only">to exercise 61</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=0+0+0=0,\qquad\iint_S\mathbf F\cdot d\mathbf S=0. \]<p>The second component is not continuously differentiable everywhere. For a direct justification, replace it by \(\sqrt{x^2+z^4+\varepsilon^2}\). Each smooth approximation has zero divergence and zero flux; uniform convergence on the compact surface gives the same flux as \(\varepsilon\to0\).</p></div></details></li><li class="problem" id="problem-62" value="62"><div class="problem-top"><a class="problem-link" href="#problem-62" aria-label="Link to exercise 62">62</a><span>Chapter 6 · Exercise 62</span></div><div class="question"><p>Find the volume of \(E\) if the outward flux satisfies \[\iint_{\partial E}\langle x+xy+z,x+3y-\tfrac12y^2,4z\rangle\cdot d\mathbf S=16.\]</p></div><details class="solution"><summary>Solution <span class="sr-only">to exercise 62</span></summary><div class="sol-body">\[ \operatorname{div}\mathbf F=(1+y)+(3-y)+4=8. \]\[ 16=\iiint_E8\,dV=8\operatorname{Volume}(E),\qquad\boxed{\operatorname{Volume}(E)=2}. \]</div></details></li></ol></section></section>
+      
+      
+      <details class="source-summary"><summary>About this guide</summary><p>Based on the supplied Chapter 6 study-guide files. All active questions and supplied solutions are included; arithmetic and conversion errors have been corrected. Source conflicts that affect the answer are identified in the corresponding solution.</p><p>Mathematics loads with MathJax and requires an internet connection. Images use the shared <code>images/</code> folder. <a href="SOURCE-NOTES.md">Read the source notes and corrections.</a></p></details>
+      <footer class="footer"><span>MAT238 Calculus III · Final Exam · Chapter 6</span><a href="#top">Return to the beginning ↑</a></footer>
+    </main>
+  </div>
+  <script>
+    (function(){
+      const all=()=>Array.from(document.querySelectorAll('details.solution'));
+      document.getElementById('controls').hidden=false;
+      document.getElementById('show-all').addEventListener('click',()=>all().forEach(d=>d.open=true));
+      document.getElementById('hide-all').addEventListener('click',()=>all().forEach(d=>d.open=false));
+      let savedStates=null;
+      const restore=()=>{if(!savedStates)return;all().forEach((d,i)=>d.open=savedStates[i]);savedStates=null;document.body.classList.remove('print-questions');};
+      window.addEventListener('afterprint',restore);
+      document.querySelectorAll('[data-print]').forEach(button=>button.addEventListener('click',async()=>{
+        savedStates=all().map(d=>d.open);
+        const withSolutions=button.dataset.print==='solutions';
+        document.body.classList.toggle('print-questions',!withSolutions);
+        all().forEach(d=>d.open=withSolutions);
+        try{if(window.MathJax&&MathJax.typesetPromise)await MathJax.typesetPromise();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));window.print();}
+        catch(error){restore();document.getElementById('math-status').textContent='Printing could not start. Please reload and try again.';console.error(error);}
+      }));
+      document.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{
+        if(img.dataset.missing)return;img.dataset.missing='true';
+        const message=document.createElement('p');message.className='source-note';message.textContent='Diagram unavailable: '+img.getAttribute('src')+'. Check the filename in the repository images folder.';img.after(message);
+      }));
+    })();
+  </script>
+</body>
+</html>
