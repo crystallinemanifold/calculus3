@@ -1,0 +1,36 @@
+SOURCE REVIEW
+
+Sources: the supplied StudyGuides folder’s Chapter 2 and Chapter 3 TeX files, its Exam1StudyGuide_with_Solutions.html, and the synced HTML question reference. Originals were not modified.
+The legacy Exam1StudyGuide.html in OneDrive could be listed but could not be read (EPERM); its synced 15,650-byte question reference was available. No main chapter or required graphic is missing. NC.tex is present; its vector macros were normalized for MathJax.
+
+Numbering: Chapter 2 1–60; Chapter 3 source 1–28 becomes 61–88. Inactive Chapter 2 source 61–67 is preserved as supplemental 89–95.
+
+Corrections and clarifications:
+8: replaced duplicated Exercise 7 answer; Q=(1,8).
+16: corrected shared-point explanation in (a) and counterexample base point in (d); explains coincident vs distinct parallel lines.
+18: removed undeclared b from HTML prompt, matching TeX.
+19: folder TeX asks v1-v2+v3, matching 12R_19.png; cached TeX and HTML ask v1=v2+v3. Alternate question and construction preserved in the solution note. This is a CONTENT mismatch, not a filename mismatch.
+21: supplied dot-product answer retained as supporting work; vector sum <3,2,2> added.
+23: intermediate cross-product j coefficient corrected to -(4+4); final <10,-8,-7> was already correct.
+28: both supplied decompositions retained; only this exercise uses the v,w stated there.
+30: unmatched parenthesis corrected.
+31: force-balance assumption stated.
+32: TeX expressions used, matching solutions. HTML’s undeclared x and undefined scalar cross product preserved and explained in a note.
+40: nonzero-vector assumption stated.
+43: TeX right side <-1,2,a> used, giving a=-1. HTML <1,2,a> requires a=-5/3; alternate preserved in note.
+44: diagram description corrected from v cross w to e cross w; algebraic proof added.
+48: normal vector described as normal to the plane, with parallel-plane convention stated.
+59: nonpositive expression corrected from <0 to <=0; empty-set conclusion unchanged.
+71–74 (Chapter 3 source 11–14): full definitions of r1,r2 are absent. General derivative rules provided, and supplied numerical data at t=3 explicitly labeled as optional solution data.
+80 (Chapter 3 source 20): integrations corrected to satisfy initial conditions at 0; supplied solution had used 1.
+82 (source 22): actual unit-speed arc length parametrization added; source only derived ordinary parametrization and total length.
+84 (source 24): uses R=0.6, speed=0.3, elevator speed=12. Source solution had used 2,1,40, and source’s initial point (2,0,0) is inconsistent with R=0.6. Unspecified initial phase is left arbitrary.
+85 (source 25): TeX trajectory -100/t^2 used, matching supplied answer (0,11/2,38). HTML alternate -100t^2 and its hit (0,13/2,40) preserved in note.
+92: coordinate ranges clarified.
+93: source contains [figure here] with no image filename; explanatory sketch instructions included. This placeholder belongs to commented-out supplemental practice.
+94: nonnegative cylindrical-radius branch clarified.
+95: malformed closing braces in commented-out source normalized.
+
+Image audit: all filenames matched exactly. No required images are missing. Figure 1 = 12R_1.png; Figure 2 = 12R_2.png (distinct from solution graphic 12R_2a.png). Canvas URLs and embedded base64 image dependencies were replaced by relative images/ paths.
+
+MathJax configuration reference: https://docs.mathjax.org/en/latest/web/loading.html
