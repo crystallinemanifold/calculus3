@@ -4,9 +4,9 @@ Exam 1: Chapters 2–3. Exam 2: Chapter 4. Exam 3: Chapter 5. Final: Chapter 6 (
 
 The existing live Exam 1 page is retained as exam-1.html, with a homepage link added. Its earlier source clarifications are preserved in HTML comments beside the relevant solutions.
 
-Exam 2 uses the synced Canvas HTML and Chapter 4 TeX reference. The older HTML resets ordered-list numbering twice; the guide restores 1–63. Source entries 4, 12, 15, and 42 are intentionally omitted.
+Exam 2 uses the synced Canvas HTML and Chapter 4 TeX reference. The older HTML resets ordered-list numbering twice; the guide restores 1–63. Source entries 4, 12, 15, and 42 are omitted in the source and have been removed from the page entirely; the remaining exercises keep their source numbers.
 
-Exam 3 uses the Chapter 5 HTML and TeX. Source entries 2, 3, and 40 are intentionally omitted. All 44 other exercises have collapsible solutions; the originally exposed solution to 41 is now collapsed. Five TikZ diagrams already present in the repository were restored.
+Exam 3 uses the Chapter 5 HTML and TeX. Source entries 2, 3, and 40 are omitted in the source and have been removed from the page entirely; the remaining exercises keep their source numbers. All 44 other exercises have collapsible solutions; the originally exposed solution to 41 is now collapsed. Five TikZ diagrams already present in the repository were restored.
 
 The Final includes all 62 Chapter 6 source exercises, including 58–62 missing from its HTML conversion.
 
