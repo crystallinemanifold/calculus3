@@ -6,6 +6,7 @@
   <meta name="description" content="MAT238 Calculus III Exam 1 study guide: vector geometry and vector functions, with practice problems and collapsible worked solutions.">
   <meta name="color-scheme" content="light">
   <title>Exam 1 Study Guide · MAT238 Calculus III</title>
+  <script>/* theme-sidebar-v1: apply saved theme and sidebar state before first paint */(function(){var d=document.documentElement,t=null,s=null;try{t=localStorage.getItem("mat238-sg:theme");s=localStorage.getItem("mat238-sg:sidebar");}catch(e){}if(t!=="dark"&&t!=="light")t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.setAttribute("data-theme",t);if(s==="collapsed")d.classList.add("sb-collapsed");})();</script>
   <style>
     :root{--ink:#142e3c;--muted:#556a74;--paper:#f7f5ef;--white:#fff;--line:#d9e1dd;--green:#256658;--pale:#eaf2ed;--orange:#b04e28;--serif:Georgia,'Times New Roman',serif;--sans:system-ui,-apple-system,'Segoe UI',sans-serif}
     *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.7 var(--sans)}a{color:var(--green);text-underline-offset:4px}button,a,summary{touch-action:manipulation}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:5px;border-radius:3px}button{font:inherit;cursor:pointer}button:disabled{cursor:wait;opacity:.6}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:fixed;top:-80px;left:16px;z-index:10;background:white;padding:12px}.skip-link:focus{top:12px}
@@ -19,6 +20,41 @@
     @media print{@page{margin:.6in}body{font-size:10pt;background:white;color:black}.masthead{background:white;color:black}.hero{padding:0 0 20px}.hero h1{font-size:30pt}.hero h1 span,.hero-description,.eyebrow{color:black}.hero-art,.sidebar,.controls,.skip-link,.math-status,.source-summary,.footer{display:none!important}.hero-description{margin-bottom:12px}.hero-meta{font-size:9pt}.hero-meta span{padding-top:4px;border-color:#ccc}.hero-meta strong{color:black}.shell{display:block;padding:0}.welcome{border:1px solid #ccc;padding:12px;margin-bottom:22px}.welcome h2{font-size:15pt}.welcome p{font-size:9pt}.chapter{margin-top:24px}.chapter-header{margin:14px 0;padding-top:12px;break-after:avoid}.chapter-header h2{font-size:23pt}.topic-heading{break-after:avoid}.topic{margin-bottom:22px}.problem{border:0;border-bottom:1px solid #ccc;padding:12px 0;border-radius:0;margin:0;break-inside:auto}.question,.sol-body{font-size:10pt}.problem-top{break-after:avoid}.problem-link{background:white;color:black;height:auto}.solution{border:0;margin-top:10px;padding:0}.solution>summary{font-size:9pt;color:black}.solution>summary::marker{content:''}.given{background:white;border:1px solid #ccc;font-size:9pt}.source-note{background:white;border:1px solid #ccc;font-size:8pt!important}figure{break-inside:avoid}figure img{max-height:3in}mjx-container{break-inside:avoid}body.print-questions .solution{display:none!important}a{color:black;text-decoration:none}.chapter-header,.topic-heading{break-inside:avoid}}
   .question,.sol-body,.given{max-width:100%;overflow-x:auto}    .sidebar .cross{display:block;width:max-content;max-width:100%;margin-top:9px;font-weight:600}
       .eyebrow.mat-label{text-transform:none;letter-spacing:.06em;font-size:.95rem;font-weight:650}
+
+    /* theme-sidebar-v1: light/dark theme + collapsible sidebar */
+    .side-btn{display:inline-grid;place-items:center;width:32px;height:30px;padding:0;border:1px solid #b9cac3;border-radius:5px;background:var(--white,#fff);color:var(--green)}.side-btn:hover{background:var(--pale,#eaf2ed)}.side-btn svg{width:16px;height:16px;display:block}.side-btn .i-sun{display:none}:root[data-theme="dark"] .side-btn .i-sun{display:block}:root[data-theme="dark"] .side-btn .i-moon{display:none}
+    .side-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 15px}.side-head .nav-title{margin:0}.side-tools{display:flex;gap:6px}.side-btn .chev{transition:transform .2s}
+    .shell{transition:grid-template-columns .2s ease}
+    html.sb-collapsed .shell{grid-template-columns:32px minmax(0,1fr);gap:36px}
+    html.sb-collapsed .sidebar-inner>:not(.side-head),html.sb-collapsed .side-head .nav-title{display:none}
+    html.sb-collapsed .side-head{margin:0}html.sb-collapsed .side-tools{flex-direction:column}
+    html.sb-collapsed .side-btn .chev{transform:translateX(-1.5px) scaleX(-1);transform-origin:9.75px 8px}
+    @media(max-width:760px){html.sb-collapsed .side-tools{flex-direction:row}html.sb-collapsed .sidebar{margin-bottom:18px}}
+    @media(prefers-reduced-motion:reduce){.shell,.side-btn .chev{transition:none}}
+    @media screen{
+      :root[data-theme="dark"]{--ink:#e3ebe7;--muted:#9fb2b6;--paper:#0f1b21;--white:#162730;--line:#2b3f48;--green:#7fc7b0;--pale:#1c3632;--orange:#eb9a72;color-scheme:dark}
+      :root[data-theme="dark"] .masthead{background:#0a151b;border-bottom:1px solid var(--line)}
+      :root[data-theme="dark"] .skip-link{background:var(--white);color:var(--ink)}
+      :root[data-theme="dark"] .sol-body,:root[data-theme="dark"] .directions p,:root[data-theme="dark"] .four{color:#cbd8d4}
+      :root[data-theme="dark"] .directions .howto{color:var(--muted)}
+      :root[data-theme="dark"] .controls button,:root[data-theme="dark"] .check-row button,:root[data-theme="dark"] .mk,:root[data-theme="dark"] .side-btn{background:var(--white);border-color:#3c535d}
+      :root[data-theme="dark"] .controls button:hover,:root[data-theme="dark"] .mk:hover,:root[data-theme="dark"] .side-btn:hover{background:var(--pale)}
+      :root[data-theme="dark"] .mk[aria-pressed="true"],:root[data-theme="dark"] .check-row button.check{color:#0f1b21}
+      :root[data-theme="dark"] .mk[data-m="T"][aria-pressed="true"],:root[data-theme="dark"] .check-row button.check{background:var(--green);border-color:var(--green)}
+      :root[data-theme="dark"] .mk[data-m="F"][aria-pressed="true"]{background:var(--orange);border-color:var(--orange)}
+      :root[data-theme="dark"] .check-row button:hover{filter:brightness(1.12)}
+      :root[data-theme="dark"] .source-note{background:#2a2316;border-left-color:#b9894a;color:#e3cfa5}
+      :root[data-theme="dark"] .source-summary{background:var(--white)}
+      :root[data-theme="dark"] .stmt,:root[data-theme="dark"] .key>li{border-top-color:var(--line)}
+      :root[data-theme="dark"] .stmt[data-mark="F"]>.stmt-text{color:#7d9096}
+      :root[data-theme="dark"] .stmt.right{background:#173129}
+      :root[data-theme="dark"] .stmt.wrong{background:#38231a}
+      :root[data-theme="dark"] .kind-calculation{color:#a9c3e6;border-color:#3b5374;background:#18243a}
+      :root[data-theme="dark"] .kind-theorem{color:#e8c08a;border-color:#6b5230;background:#2b2216}
+      :root[data-theme="dark"] .kind-formula{color:#8fd1bb;border-color:#2f5d50;background:#16302a}
+      :root[data-theme="dark"] .kind-definition{color:#d6b3da;border-color:#5b3f5e;background:#2a1d2c}
+      :root[data-theme="dark"] figure img{background:#fff;padding:6px;border-radius:5px}
+    }
   </style>
   <script>
     window.MathJax={
@@ -46,7 +82,7 @@
   </header>
   <div class="shell">
     <aside class="sidebar" aria-label="Study guide navigation"><div class="sidebar-inner">
-      <p class="nav-title">Topics</p>
+      <div class="side-head"><p class="nav-title">Topics</p><div class="side-tools"><button type="button" class="side-btn" data-sidebar-toggle aria-expanded="true" title="Hide topics" aria-label="Hide topics sidebar"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 3v10" stroke="currentColor" stroke-width="1.5"/><path class="chev" d="M10.5 6 9 8l1.5 2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="side-btn" data-theme-toggle title="Switch light / dark" aria-label="Switch light or dark theme"><svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 10.1A5.6 5.6 0 0 1 5.9 2.8a5.6 5.6 0 1 0 7.3 7.3Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></div>
       <a class="back" href="index.html">← All study guides</a><a class="back cross" href="exam-1-practice.html">Exam 1 practice problems →</a><nav aria-label="Topics"><a href="#vectors">Vector operations &amp; geometry <span>1–14</span></a><a href="#lines">Lines in space <span>15–18</span></a><a href="#vector-diagrams">Vector diagrams <span>19–20</span></a><a href="#products">Vector products &amp; geometry <span>21–29</span></a><a href="#forces">Forces <span>30–31</span></a><a href="#scalar-vector">Scalar &amp; vector expressions <span>32</span></a><a href="#cross-products">Cross &amp; triple products <span>33–38</span></a><a href="#dot-products">Dot products &amp; vector lengths <span>39–42</span></a><a href="#vector-identities">Cross-product equations &amp; identities <span>43–45</span></a><a href="#planes">Planes &amp; intersections <span>46–52</span></a><a href="#quadrics">Quadric surfaces &amp; traces <span>53–60</span></a><a href="#functions">Domains &amp; paths <span>61–64</span></a><a href="#derivatives">Vector derivatives &amp; product rules <span>65–74</span></a><a href="#integration">Integration &amp; initial conditions <span>75–80</span></a><a href="#motion">Arc length <span>81–82</span></a><a href="#particle-motion">Motion, velocity &amp; acceleration <span>83–86</span></a><a href="#unit-tangents">Unit tangent vectors <span>87–88</span></a><a href="#supplemental">Supplemental coordinate practice <span>89–95</span></a></nav>
 
       <a class="back" href="#top">Back to top ↑</a>
@@ -973,5 +1009,14 @@ is a hyperboloid of one sheet.
       }));
     })();
   </script>
+  <script>/* theme-sidebar-v1 */(function(){
+    var d=document.documentElement;
+    function save(k,v){try{localStorage.setItem("mat238-sg:"+k,v);}catch(e){}}
+    document.querySelectorAll("[data-theme-toggle]").forEach(function(b){b.addEventListener("click",function(){var n=d.getAttribute("data-theme")==="dark"?"light":"dark";d.setAttribute("data-theme",n);save("theme",n);});});
+    var sb=document.querySelectorAll("[data-sidebar-toggle]");
+    function paint(){var c=d.classList.contains("sb-collapsed");sb.forEach(function(b){b.setAttribute("aria-expanded",c?"false":"true");b.title=c?"Show topics":"Hide topics";b.setAttribute("aria-label",c?"Show topics sidebar":"Hide topics sidebar");});}
+    sb.forEach(function(b){b.addEventListener("click",function(){d.classList.toggle("sb-collapsed");save("sidebar",d.classList.contains("sb-collapsed")?"collapsed":"open");paint();});});
+    paint();
+  })();</script>
 </body>
 </html>
